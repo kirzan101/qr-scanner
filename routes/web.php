@@ -1,0 +1,15 @@
+<?php
+
+use App\Http\Controllers\ScanController;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::get('/home', function () {
+    return Inertia::render('Home');
+})->name('home');
+
+Route::post('/scan', [ScanController::class, 'scan'])->name('scan');

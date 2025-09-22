@@ -1,0 +1,84 @@
+<?php
+
+namespace App\Services;
+
+use App\Interfaces\ProfileInterface;
+use App\Models\Profile;
+use App\Traits\HttpErrorCodeTrait;
+use App\Traits\ReturnModelCollectionTrait;
+use App\Traits\ReturnModelTrait;
+use Illuminate\Support\Facades\DB;
+
+class ProfileService implements ProfileInterface
+{
+    use HttpErrorCodeTrait,
+        ReturnModelCollectionTrait,
+        ReturnModelTrait;
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function storeProfile(array $data): array
+    {
+        try {
+            return DB::transaction(function () use ($data) {
+                $profile = Profile::create([
+                    'first_name' => $data['first_name'] ?? null,
+                    'middle_name' => $data['middle_name'] ?? null,
+                    'last_name' => $data['last_name'] ?? null,
+                    'unique_identifier' => $data['unique_identifier'] ?? null,
+                    'position' => $data['position'] ?? null,
+                    'user_id' => $data['user_id'] ?? null,
+                ]);
+
+                return $this->returnModel(201, 'success', 'Profile created successfully!', $profile, $profile->id);
+            });
+        } catch (\Throwable $th) {
+            $code = $this->httpCode($th);
+            return $this->returnModel($code, 'error', $th->getMessage());
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function updateProfile($profileId, array $data): array
+    {
+        try {
+            return DB::transaction(function () use ($profileId, $data) {
+                $profile = Profile::findOrFail($profileId);
+
+                $profile = tap($profile)->update([
+                    'first_name' => $data['first_name'] ?? $profile->first_name,
+                    'middle_name' => $data['middle_name'] ?? $profile->middle_name,
+                    'last_name' => $data['last_name'] ?? $profile->last_name,
+                    'unique_identifier' => $data['unique_identifier'] ?? $profile->unique_identifier,
+                    'position' => $data['position'] ?? $profile->position,
+                ]);
+
+                return $this->returnModel(200, 'success', 'Profile updated successfully!', $profile, $profile->id);
+            });
+        } catch (\Throwable $th) {
+            $code = $this->httpCode($th);
+            return $this->returnModel($code, 'error', $th->getMessage());
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function deleteProfile($profileId): array
+    {
+        try {
+            return DB::transaction(function () use ($profileId) {
+                $profile = Profile::findOrFail($profileId);
+                $profile->delete();
+
+                return $this->returnModel(200, 'success', 'Profile deleted successfully!');
+            });
+        } catch (\Throwable $th) {
+            $code = $this->httpCode($th);
+            return $this->returnModel($code, 'error', $th->getMessage());
+        }
+    }
+}
