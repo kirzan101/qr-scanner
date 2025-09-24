@@ -8,10 +8,11 @@
         <!-- Make the container take full height for vertical centering -->
         <v-container
             class="d-flex align-center justify-center"
-            style="min-height: 200px"
+            style="min-height: 40vh"
         >
             <div id="reader" style="width: 300px"></div>
         </v-container>
+        
         <h1>{{ scanned }}</h1>
     </v-card>
 </template>
