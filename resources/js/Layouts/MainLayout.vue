@@ -28,6 +28,7 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    can: Array,
 });
 
 const page = usePage();
