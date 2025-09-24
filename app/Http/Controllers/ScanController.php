@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ScanFormRequest;
 use App\Interfaces\ScanProcessInterface;
+use App\Services\ScanProcessService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 

@@ -12,4 +12,11 @@ Route::get('/home', function () {
     return Inertia::render('Home');
 })->name('home');
 
-Route::post('/scan', [ScanController::class, 'scan'])->name('scan');
+// Route::get('/scan', function () {
+//     return Inertia::render('Scans');
+// })->name('scan');
+
+
+Route::resource('scans', ScanController::class)->except(['create', 'edit', 'show']);
+
+Route::post('/scans', [ScanController::class, 'scan'])->name('scan');
