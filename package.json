@@ -18,7 +18,9 @@
     },
     "dependencies": {
         "@inertiajs/vue3": "^2.1.7",
+        "@jamescoyle/vue-icon": "^0.1.2",
         "@mdi/font": "^7.4.47",
+        "@mdi/js": "^7.4.47",
         "@vitejs/plugin-vue": "^6.0.1"
     }
 }
