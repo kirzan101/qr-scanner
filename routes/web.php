@@ -12,6 +12,10 @@ Route::get('/home', function () {
     return Inertia::render('Home');
 })->name('home');
 
+Route::get('/scanned', function () {
+    return Inertia::render('ScannedHistory');
+})->name('scanned');
+
 // Route::get('/scan', function () {
 //     return Inertia::render('Scans');
 // })->name('scan');
