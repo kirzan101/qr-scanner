@@ -1,9 +1,10 @@
 <template>
     <Head :title="title" />
-    <MainLayout :errors="errors" :flash="flash" :can="can" />
-    <v-container>
-        <ScanContent :flash="flash" :errors="errors" :can="can" />
-    </v-container>
+    <MainLayout :errors="errors" :flash="flash" :can="can">
+        <v-container>
+            <ScanContent :flash="flash" :errors="errors" :can="can" />
+        </v-container>
+    </MainLayout>
 </template>
 <script setup>
 import { Head, usePage } from "@inertiajs/vue3";
