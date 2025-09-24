@@ -1,14 +1,28 @@
 <template>
+    <Head :title="title" />
+    <MainLayout :errors="errors" :flash="flash" :can="can" />
     <v-container>
-        <ScanContent :errors="errors" :flash="flash" :can="can" />
+        <ScanContent :flash="flash" :errors="errors" :can="can" />
     </v-container>
 </template>
 <script setup>
+import { Head, usePage } from "@inertiajs/vue3";
+import { computed } from "vue";
 import ScanContent from "../Components/Pages/Scan/ScanContent.vue";
+import MainLayout from "../Layouts/MainLayout.vue";
 
 const props = defineProps({
-    errors: String,
-    flash: String,
+    errors: Object,
+    flash: Object,
     can: Array,
+});
+
+const page = usePage();
+const appName = computed(() => {
+    return page.props.appName ?? "App Name";
+});
+
+const title = computed(() => {
+    return `QR Scanner — ${appName.value}`;
 });
 </script>

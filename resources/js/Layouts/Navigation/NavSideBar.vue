@@ -1,0 +1,185 @@
+<template>
+    <v-navigation-drawer v-model="drawer" app>
+        <v-sheet class="pa-4 d-flex flex-column align-center" color="primary">
+            <v-avatar class="mb-4" color="blue-grey-lighten-2" size="53">
+                <!-- Dynamic icon based on admin status -->
+                <v-icon icon="mdi-account-star" size="x-large" />
+            </v-avatar>
+
+            <!-- User name and email with responsive behavior -->
+            <div class="user-name">John Doe</div>
+            <div class="user-email">johndoe@gmail.com</div>
+        </v-sheet>
+
+        <v-divider></v-divider>
+
+        <v-list nav>
+            <Link class="no-underline-v-list-item" href="/dashboard">
+                <v-list-item
+                    class="sidebar-hover"
+                    :class="{ selected: '/dashboard' }"
+                >
+                    <template #prepend>
+                        <v-icon
+                            icon="mdi-home"
+                            color="white"
+                            size="default"
+                        ></v-icon>
+                    </template>
+                    <v-list-item-title class="text-subtitle-2"
+                        >Dashboard</v-list-item-title
+                    >
+                </v-list-item>
+            </Link>
+        </v-list>
+
+        <template v-slot:append>
+            <v-footer class="d-flex flex-column text-center" color="primary">
+                <div>
+                    <strong>{{ appName }}</strong>
+                    <br />
+                    <strong>ICT ©</strong> — {{ new Date().getFullYear() }}
+                </div>
+            </v-footer>
+        </template>
+    </v-navigation-drawer>
+    <NavBar
+        :hasDrawer="true"
+        @toggleDrawer="toggleDrawer"
+        :errors="errors"
+        :flash="flash"
+        :can="can"
+    />
+</template>
+
+<script setup>
+import { computed, onMounted, ref } from "vue";
+
+import { usePage, Link } from "@inertiajs/vue3";
+import { useDisplay } from "vuetify";
+
+import NavBar from "./NavBar.vue";
+
+const drawer = ref(false);
+
+const props = defineProps({
+    errors: { type: Object, default: null },
+    flash: { type: Object, default: null },
+    can: { type: Array, default: [] },
+    hasChangPassword: { type: Boolean, default: true },
+});
+
+const { lgAndUp } = useDisplay();
+onMounted(() => {
+    if (lgAndUp.value) {
+        drawer.value = true;
+    }
+});
+
+const toggleDrawer = () => {
+    drawer.value = !drawer.value;
+};
+
+const page = usePage();
+const appName = computed(() => page.props.appName ?? "App Name");
+
+const moduleLink = (module) => module.replace(/_/g, "-");
+const moduleName = (module) => {
+    return module
+        .replace(/_/g, "-")
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+};
+</script>
+
+<style scoped>
+/* Ensure user name and email wrap if text is too long */
+.user-name,
+.user-email {
+    word-wrap: break-word; /* Allow wrapping of long text */
+    word-break: break-word; /* Ensure long words break at the container's edge */
+    overflow-wrap: break-word; /* New standard to ensure wrapping works in modern browsers */
+    text-align: center;
+    max-width: 100%; /* Prevent overflow */
+    display: inline-block; /* Ensure the text behaves like inline-block */
+    white-space: normal; /* Allow wrapping within the container */
+}
+
+/* Style for the user's name */
+.user-name {
+    color: #baa82c;
+    font-weight: bold;
+    font-size: 1.2rem; /* Default font size for larger screens */
+    margin-bottom: 0.5rem; /* Spacing between name and email */
+}
+
+/* Style for the user's email */
+.user-email {
+    color: #fff;
+    font-size: 0.9rem; /* Default font size for email */
+}
+
+/* Smaller screens: adjust font size */
+@media (max-width: 600px) {
+    .user-name {
+        font-size: 1rem; /* Smaller font size for user name */
+    }
+
+    .user-email {
+        font-size: 0.8rem; /* Smaller font size for email */
+    }
+}
+
+/* Larger screens: adjust font size */
+@media (min-width: 1200px) {
+    .user-name {
+        font-size: 1.5rem; /* Larger font size for user name */
+    }
+
+    .user-email {
+        font-size: 1rem; /* Larger font size for email */
+    }
+}
+
+/* Selected state matches gold hover */
+.sidebar-hover.selected {
+    background-color: #13294b !important;
+    border-radius: 6px;
+}
+
+.sidebar-hover.selected ::v-deep(.v-list-item-title),
+.sidebar-hover.selected ::v-deep(.v-icon) {
+    color: black !important;
+}
+
+/* Hover effect */
+.sidebar-hover:hover {
+    background-color: #baa82c;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Make entire navigation drawer gold */
+.gold-sidebar {
+    background-color: #4c3629 !important;
+    color: #000;
+}
+
+/* Custom class to remove underline from the <a> tag generated by Inertia's Link */
+.no-underline-v-list-item {
+    text-decoration: none !important;
+}
+
+/* Ensure the title and icon within the list item also inherit or are set to white when not selected */
+.no-underline-v-list-item .v-list-item-title,
+.no-underline-v-list-item .v-icon {
+    color: white !important;
+}
+
+/* NEW CSS for custom ripple color */
+.sidebar-hover :deep(.v-ripple__container) {
+    color: white !important; /* This targets the ripple color directly */
+}
+</style>
