@@ -2,7 +2,7 @@
     <Head :title="title" />
     <MainLayout :errors="errors" :flash="flash" :can="can">
         <v-container>
-            <ScanContent :flash="flash" :errors="errors" :can="can" />
+            <ScanContent :flash="flash" :errors="errors" />
         </v-container>
     </MainLayout>
 </template>
