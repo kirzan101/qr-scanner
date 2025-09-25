@@ -3,17 +3,12 @@
         app
         color="transparent"
         :absolute="true"
-        class="d-flex justify-center text-center"
+        class="d-flex justify-center"
         height="54"
     >
-        <div>
-            <strong>{{ `${appName} v${appVersion}` }}</strong>
-
-            <br />
-
-            <strong>{{ appDeveloper }} &copy;</strong> —
-            {{ new Date().getFullYear() }}
-        </div>
+        <span class="white--text"
+            >&copy; {{ `${new Date().getFullYear()} ${appName}` }}</span
+        >
     </v-footer>
 </template>
 
@@ -24,13 +19,5 @@ import { computed } from "vue";
 const page = usePage();
 const appName = computed(() => {
     return page.props.appName ?? "App Name";
-});
-
-const appVersion = computed(() => {
-    return page.props.appVersion;
-});
-
-const appDeveloper = computed(() => {
-    return page.props.appDeveloper ?? "Developer";
 });
 </script>

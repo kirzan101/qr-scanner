@@ -1,21 +1,39 @@
 <template>
-    <v-app-bar color="primary" class="px-2">
+    <v-app-bar color="primary">
         <v-app-bar-nav-icon v-if="hasDrawer" @click="toggleDrawer" />
-        <h2>QR Scanner</h2>
+
+        <v-app-bar-title>
+            <img
+                src="/images/logos/APZ_s_w.png"
+                alt="Achi Logo"
+                class="mt-1"
+                style="height: 40px"
+            />
+        </v-app-bar-title>
+        <template v-slot:append v-if="false">
+            <switch-theme />
+            <menu-settings :errors="errors" :flash="flash" :can="can" />
+        </template>
     </v-app-bar>
 </template>
 
 <script setup>
+import { computed } from "vue";
+import { usePage } from "@inertiajs/vue3";
+
+import SwitchTheme from "./Components/SwitchTheme.vue";
+import MenuSettings from "./Components/MenuSettings.vue";
+
+const page = usePage();
+const appName = computed(() => {
+    return page.props.appName ?? "App Name";
+});
+
 const props = defineProps({
     hasDrawer: {
         type: Boolean,
-        default: true,
+        default: false,
     },
-    hasSettings: {
-        type: Boolean,
-        default: true,
-    },
-    hasChangPassword: Boolean,
     errors: Object,
     flash: Object,
     can: Array,
