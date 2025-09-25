@@ -1,171 +1,175 @@
 <template>
-    <v-container>
-        <v-row>
-            <v-col cols="12" md="12" lg="12" xl="12" xxl="12">
-                <v-row justify="center">
-                    <v-col
-                        cols="10"
-                        xs="10"
-                        sm="6"
-                        md="6"
-                        lg="4"
-                        xl="3"
-                        xxl="3"
-                    >
-                        <v-card
-                            rounded="xl"
-                            elevation="0"
-                            title="Scan QR"
-                            prepend-icon="mdi-qrcode-scan"
-                            variant="outlined"
-                            border="primary"
-                        >
-                            <v-container
-                                class="d-flex justify-center"
-                                style="min-height: 200px"
-                            >
-                                <ReadQrCode />
-                                <!-- <v-responsive
-                                    aspect-ratio="1"
-                                    class="camera-viewfinder"
-                                >
-                                    <v-container
-                                        class="flip-camera-overlay d-flex justify-center align-end"
-                                        style="
-                                            position: absolute;
-                                            left: 0;
-                                            right: 0;
-                                            bottom: 16px;
-                                        "
-                                    >
-                                        <v-btn
-                                            icon
-                                            color="transparent"
-                                            class="ma-0 pa-0"
-                                            elevation="0"
-                                        >
-                                            <SvgIcon
-                                                type="mdi"
-                                                :path="cameraFlipPath"
-                                                size="32"
-                                            />
-                                        </v-btn>
-                                    </v-container>
-                                </v-responsive> -->
-                            </v-container>
-                        </v-card>
-                    </v-col>
-                </v-row>
+  <v-container fluid class="pa-4">
+    <!-- Web view layout with camera on left and full column on right -->
+    <v-row class="d-none d-md-flex" no-gutters>
+      <!-- Left side: Camera and some last scanned items -->
+      <v-col cols="6" class="pr-2">
+        <CardQrScanner />
+        
+        <v-card class="mt-4" elevation="2" rounded="lg">
+          <v-card-title class="text-h6 font-weight-bold pa-4">
+            Recent Scanned:
+          </v-card-title>
+          <v-card-text class="pa-2">
+            <!-- Always show the 2 most recent items -->
+            <CardLastScanned
+              v-for="(item, index) in recentItems"
+              :key="`recent-${index}`"
+              :item="item"
+              :index="index"
+              @handleQRClick="handleQRClick"
+            />
+          </v-card-text>
+        </v-card>
+      </v-col>
+      
+      <!-- Right side: Complete history with pagination -->
+      <v-col cols="6" class="pl-2">
+        <v-card elevation="2" rounded="lg">
+          <v-card-title class="text-h6 font-weight-bold pa-4">
+            Scan History:
+          </v-card-title>
+          <v-card-text class="pa-2" style="min-height: 400px;">
+            <CardLastScanned
+              v-for="(item, index) in paginatedItemsWeb"
+              :key="`history-${index}`"
+              :item="item"
+              :index="index"
+              @handleQRClick="handleQRClick"
+            />
+          </v-card-text>
+          
+          <!-- Pagination for web right column -->
+          <v-card-actions class="justify-center" v-if="totalPagesWeb > 1">
+            <v-pagination
+              v-model="currentPageWeb"
+              :length="totalPagesWeb"
+              :total-visible="5"
+              color="primary"
+              size="small"
+            />
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
 
-                <v-row justify="center">
-                    <v-col cols="12" md="12" lg="10" xl="8" xxl="6">
-                        <v-container class="mb-4">
-                            <h3 class="text-h6 font-weight-bold mb-3">
-                                Last scanned:
-                            </h3>
-
-                            <!-- Card for last scanned  -->
-                            <v-row justify="center">
-                                <v-col
-                                    v-for="(item, index) in scanned"
-                                    :key="index"
-                                    cols="12"
-                                    md="6"
-                                    lg="6"
-                                    xl="6"
-                                    xxl="6"
-                                >
-                                    <v-card
-                                        class="mb-3"
-                                        rounded="lg"
-                                        elevation="3"
-                                        variant="outlined"
-                                        border="primary"
-                                    >
-                                        <v-card-text class="pa-2">
-                                            <v-row align="center" no-gutters>
-                                                <v-col>
-                                                    <v-card-title
-                                                        class="text-body-1-bold font-weight-medium mb-1"
-                                                        >{{
-                                                            item.name
-                                                        }}</v-card-title
-                                                    >
-                                                    <v-card-text
-                                                        class="text-body-2 font-weight-medium mb-1"
-                                                        >{{
-                                                            item.code
-                                                        }}</v-card-text
-                                                    >
-                                                    <v-card-text
-                                                        class="text-caption text-grey-darken-1"
-                                                        >{{
-                                                            item.time
-                                                        }}</v-card-text
-                                                    >
-                                                </v-col>
-                                                <v-col cols="auto">
-                                                    <v-container
-                                                        class="qr-code-icon d-flex justify-center align-center pa-3"
-                                                        style="cursor: pointer"
-                                                        @click="
-                                                            handleQRClick(
-                                                                item,
-                                                                index
-                                                            )
-                                                        "
-                                                    >
-                                                        <SvgIcon
-                                                            type="mdi"
-                                                            :path="path"
-                                                            size="90"
-                                                            class="text-primary"
-                                                        />
-                                                    </v-container>
-                                                </v-col>
-                                            </v-row>
-                                        </v-card-text>
-                                    </v-card>
-                                </v-col>
-                            </v-row>
-                        </v-container>
-                    </v-col>
-                </v-row>
-            </v-col>
-        </v-row>
+    <!-- Mobile view layout with camera on top and scrollable cards with pagination -->
+    <v-container class="d-flex d-md-none" fluid>
+      <v-col cols="12">
+        <CardQrScanner />
+        
+        <v-card class="mt-4" elevation="2" rounded="lg">
+          <v-card-text class="pa-2">
+            <CardLastScanned
+              v-for="(item, index) in paginatedItems"
+              :key="index"
+              :item="item"
+              :index="index"
+              @handleQRClick="handleQRClick"
+            />
+          </v-card-text>
+          
+          <!-- Pagination for mobile view -->
+          <v-card-actions class="justify-center" v-if="totalPages > 1">
+            <v-pagination
+              v-model="currentPage"
+              :length="totalPages"
+              :total-visible="3"
+              color="primary"
+              size="small"
+            />
+          </v-card-actions>
+        </v-card>
+      </v-col>
     </v-container>
+  </v-container>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import SvgIcon from "@jamescoyle/vue-icon";
-import { mdiQrcode, mdiCameraFlip, mdiCamera } from "@mdi/js";
-import ReadQrCode from "./Components/ReadQrCode.vue";
+import { ref, computed } from 'vue'
+import CardQrScanner from './Components/CardQrScanner.vue'
+import CardLastScanned from './Components/CardLastScanned.vue'
 
-const scanned = ref([
-    {
-        name: "Castillo, Sherry",
-        code: "dsa-zxc-456",
-        time: "2024-09-24 11:00:00 am",
-    },
-    {
-        name: "Test, Allan",
-        code: "dsa-zxc-456",
-        time: "2024-07-16 9:29:22 am",
-    },
-]);
+// Mobile pagination
+const currentPage = ref(1)
+const itemsPerPage = 5
 
-const path = mdiQrcode;
-const cameraFlipPath = mdiCameraFlip;
-const cameraPath = mdiCamera;
+// Web right column pagination
+const currentPageWeb = ref(1)
+const itemsPerPageWeb = 6
+
+const scannedItems = ref([
+  {
+    name: "Castillo, Sherry",
+    code: "dsa-zxc-456",
+    time: "2024-09-24 11:00:00 am",
+  },
+  {
+    name: "Test, Allan",
+    code: "dsa-zxc-456",
+    time: "2024-07-16 9:29:22 am",
+  },
+  {
+    name: "Johnson, Mike",
+    code: "abc-def-789",
+    time: "2024-09-23 2:15:30 pm",
+  },
+  {
+    name: "Smith, Sarah",
+    code: "xyz-123-456",
+    time: "2024-09-22 10:45:15 am",
+  },
+  {
+    name: "Brown, David",
+    code: "qwe-rty-789",
+    time: "2024-09-21 4:30:22 pm",
+  },
+  {
+    name: "Wilson, Emma",
+    code: "poi-lkj-123",
+    time: "2024-09-20 8:20:10 am",
+  },
+  {
+    name: "Davis, John",
+    code: "mnb-vcx-456",
+    time: "2024-09-19 1:10:45 pm",
+  }
+])
+
+// Recent items - always shows the 2 most recent scans
+const recentItems = computed(() => {
+  return scannedItems.value.slice(0, 2)
+})
+
+// Mobile pagination computed properties
+const paginatedItems = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return scannedItems.value.slice(start, end)
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(scannedItems.value.length / itemsPerPage)
+})
+
+// Web right column pagination computed properties (complete history)
+const paginatedItemsWeb = computed(() => {
+  const start = (currentPageWeb.value - 1) * itemsPerPageWeb
+  const end = start + itemsPerPageWeb
+  return scannedItems.value.slice(start, end)
+})
+
+const totalPagesWeb = computed(() => {
+  return Math.ceil(scannedItems.value.length / itemsPerPageWeb)
+})
+
+// Function to add new scanned item (this will automatically update recent items)
+const addNewScan = (newItem) => {
+  // Add to the beginning of the array (most recent first)
+  scannedItems.value.unshift(newItem)
+}
 
 const handleQRClick = (item, index) => {
-    console.log("QR code clicked!", { item, index });
-};
-
-const props = defineProps({
-    errors: Object,
-    flash: Object,
-    can: Array,
-});
+  console.log("QR code clicked!", { item, index })
+}
 </script>
