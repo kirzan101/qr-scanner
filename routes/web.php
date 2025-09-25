@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScanController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -20,7 +21,7 @@ Route::get('/scanned', function () {
 //     return Inertia::render('Scans');
 // })->name('scan');
 
-
 Route::resource('scans', ScanController::class)->except(['create', 'edit', 'show']);
-
 Route::post('/scans', [ScanController::class, 'scan'])->name('scan');
+//profile
+Route::resource('profiles', ProfileController::class)->except(['create', 'edit', 'show']);

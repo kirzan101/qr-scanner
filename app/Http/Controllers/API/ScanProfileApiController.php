@@ -7,7 +7,7 @@ use App\Http\Resources\ScanProfileResource;
 use App\Interfaces\Fetches\ScanProfileFetchInterface;
 use Illuminate\Http\Request;
 
-class ScanAPIController extends Controller
+class ScanProfileApiController extends Controller
 {
     public function __construct(private ScanProfileFetchInterface $scanProfileFetch) {}
 

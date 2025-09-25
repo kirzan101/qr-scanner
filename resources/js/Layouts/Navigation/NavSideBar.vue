@@ -1,23 +1,26 @@
 <template>
-    <v-navigation-drawer v-model="drawer" app>
-        <v-sheet class="pa-4 d-flex flex-column align-center" color="primary">
+    <v-navigation-drawer v-model="drawer" app color="primary">
+        <v-sheet class="pa-4 d-flex flex-column align-center" color="#000020">
             <v-avatar class="mb-4" color="blue-grey-lighten-2" size="53">
-                <!-- Dynamic icon based on admin status -->
-                <v-icon icon="mdi-account-star" size="x-large" />
+                <v-icon
+                    :icon="profileIcon"
+                    size="x-large"
+                    color="white"
+                ></v-icon>
             </v-avatar>
-
-            <!-- User name and email with responsive behavior -->
-            <div class="user-name">John Doe</div>
-            <div class="user-email">johndoe@gmail.com</div>
+            <div class="user-name">John Doe Doorman</div>
+            <div class="user-email">johndoedoorman@example.com</div>
         </v-sheet>
 
         <v-divider></v-divider>
 
         <v-list nav>
-            <Link class="no-underline-v-list-item" href="/dashboard">
+            <Link class="no-underline-v-list-item" href="/">
                 <v-list-item
+                    link
                     class="sidebar-hover"
-                    :class="{ selected: '/dashboard' }"
+                    :class="{ selected: page.url === '/' }"
+                    @click="router.visit('/')"
                 >
                     <template #prepend>
                         <v-icon
@@ -26,52 +29,145 @@
                             size="default"
                         ></v-icon>
                     </template>
-                    <v-list-item-title class="text-subtitle-2"
-                        >Dashboard</v-list-item-title
-                    >
+                    <v-list-item-title class="text-body-2">
+                        Dashboard
+                    </v-list-item-title>
                 </v-list-item>
             </Link>
+
+            <Link
+                v-for="link in moduleLinks"
+                :key="link.module"
+                class="no-underline-v-list-item"
+                :href="`/${moduleLink(link.module)}`"
+            >
+                <v-list-item
+                    link
+                    class="sidebar-hover"
+                    :class="{
+                        selected: page.url === `/${moduleLink(link.module)}`,
+                    }"
+                    @click="router.visit(`/${moduleLink(link.module)}`)"
+                >
+                    <template #prepend>
+                        <v-icon
+                            :icon="link.icon"
+                            color="white"
+                            size="default"
+                        ></v-icon>
+                    </template>
+                    <v-list-item-title class="text-body-2">{{
+                        moduleName(link.module)
+                    }}</v-list-item-title>
+                </v-list-item>
+            </Link>
+
+            <!-- <v-list-group>
+                <template v-slot:activator="{ props }">
+                    <v-list-item
+                        v-bind="props"
+                        prepend-icon="mdi-chart-bar"
+                        title="Reports"
+                        class="sidebar-hover"
+                    ></v-list-item>
+                </template>
+
+                <Link
+                    v-for="link in reportLinks"
+                    :key="link.module"
+                    class="no-underline-v-list-item"
+                    :href="`/${moduleLink(link.module)}`"
+                >
+                    <v-list-item
+                        v-bind="props"
+                        class="sidebar-hover"
+                        :class="{
+                            selected:
+                                page.url === `/${moduleLink(link.module)}`,
+                        }"
+                        :key="link.module"
+                        @click="router.visit(`/${moduleLink(link.module)}`)"
+                    >
+                        <v-list-item-title class="text-body-2">{{
+                            moduleName(link.module)
+                        }}</v-list-item-title>
+                    </v-list-item>
+                </Link>
+            </v-list-group> -->
+
+            <v-list-group>
+                <template v-slot:activator="{ props }">
+                    <v-list-item
+                        v-bind="props"
+                        prepend-icon="mdi-tools"
+                        title="Systems"
+                        class="sidebar-hover"
+                    ></v-list-item>
+                </template>
+
+                <Link
+                    v-for="link in systemLinks"
+                    :key="link.module"
+                    class="no-underline-v-list-item"
+                    :href="`/${moduleLink(link.module)}`"
+                >
+                    <v-list-item
+                        v-bind="props"
+                        class="sidebar-hover"
+                        :class="{
+                            selected:
+                                page.url === `/${moduleLink(link.module)}`,
+                        }"
+                        :key="link.module"
+                        @click="router.visit(`/${moduleLink(link.module)}`)"
+                    >
+                        <v-list-item-title class="text-body-2">{{
+                            moduleName(link.module)
+                        }}</v-list-item-title>
+                    </v-list-item>
+                </Link>
+            </v-list-group>
         </v-list>
 
         <template v-slot:append>
             <v-footer class="d-flex flex-column text-center" color="primary">
                 <div>
-                    <strong>{{ appName }}</strong>
+                    <strong style="font-size: 0.99rem">{{ appName }}</strong>
+
                     <br />
-                    <strong>ICT ©</strong> — {{ new Date().getFullYear() }}
+                    <strong>Developer ©</strong> —
+                    {{ new Date().getFullYear() }}
                 </div>
             </v-footer>
         </template>
     </v-navigation-drawer>
-    <NavBar
+
+    <nav-bar
         :hasDrawer="true"
-        @toggleDrawer="toggleDrawer"
         :errors="errors"
         :flash="flash"
         :can="can"
+        @toggleDrawer="toggleDrawer"
     />
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-
-import { usePage, Link } from "@inertiajs/vue3";
+import NavBar from "./NavBar.vue";
+import { usePage, Link, router } from "@inertiajs/vue3";
 import { useDisplay } from "vuetify";
 
-import NavBar from "./NavBar.vue";
+const props = defineProps({
+    errors: Object,
+    flash: Object,
+    can: Array,
+});
 
 const drawer = ref(false);
 
-const props = defineProps({
-    errors: { type: Object, default: null },
-    flash: { type: Object, default: null },
-    can: { type: Array, default: [] },
-    hasChangPassword: { type: Boolean, default: true },
-});
-
-const { lgAndUp } = useDisplay();
+const { mobile } = useDisplay();
 onMounted(() => {
-    if (lgAndUp.value) {
+    if (!mobile.value) {
         drawer.value = true;
     }
 });
@@ -81,7 +177,38 @@ const toggleDrawer = () => {
 };
 
 const page = usePage();
-const appName = computed(() => page.props.appName ?? "App Name");
+const appName = computed(() => {
+    return page.props?.appName ?? "App Name";
+});
+
+const fullName = computed(() => {
+    return page.props?.auth?.user?.name ?? "Full Name";
+});
+
+const emailAddress = computed(() => {
+    return page.props?.auth?.user?.email ?? "Email Address";
+});
+
+const profileIcon = computed(() => {
+    return page.props?.auth?.user?.isAdmin ? "mdi-account-star" : "mdi-account";
+});
+
+const accountType = computed(() => {
+    return page.props?.auth?.user?.type;
+});
+
+const accessibleModules = computed(() => page.props?.accessibleModules ?? []);
+
+const moduleLinks = [];
+
+const reportLinks = [];
+
+const systemLinks = [
+    {
+        module: "profiles",
+        icon: "mdi-card-account-details-outline",
+    },
+];
 
 const moduleLink = (module) => module.replace(/_/g, "-");
 const moduleName = (module) => {
@@ -94,92 +221,95 @@ const moduleName = (module) => {
 </script>
 
 <style scoped>
-/* Ensure user name and email wrap if text is too long */
 .user-name,
 .user-email {
-    word-wrap: break-word; /* Allow wrapping of long text */
-    word-break: break-word; /* Ensure long words break at the container's edge */
-    overflow-wrap: break-word; /* New standard to ensure wrapping works in modern browsers */
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
     text-align: center;
-    max-width: 100%; /* Prevent overflow */
-    display: inline-block; /* Ensure the text behaves like inline-block */
-    white-space: normal; /* Allow wrapping within the container */
+    max-width: 100%;
+    display: inline-block;
+    white-space: normal;
+    color: white; /* ✅ Default name/email is white */
 }
 
 /* Style for the user's name */
 .user-name {
-    color: #baa82c;
     font-weight: bold;
-    font-size: 1.2rem; /* Default font size for larger screens */
-    margin-bottom: 0.5rem; /* Spacing between name and email */
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Style for the user's email */
 .user-email {
-    color: #fff;
-    font-size: 0.9rem; /* Default font size for email */
+    font-size: 0.9rem;
 }
 
-/* Smaller screens: adjust font size */
+/* Smaller screens */
 @media (max-width: 600px) {
     .user-name {
-        font-size: 1rem; /* Smaller font size for user name */
+        font-size: 0.8rem;
     }
-
     .user-email {
-        font-size: 0.8rem; /* Smaller font size for email */
+        font-size: 0.8rem;
     }
 }
 
-/* Larger screens: adjust font size */
+/* Larger screens */
 @media (min-width: 1200px) {
     .user-name {
-        font-size: 1.5rem; /* Larger font size for user name */
+        font-size: 1rem;
     }
-
     .user-email {
-        font-size: 1rem; /* Larger font size for email */
+        font-size: 0.9rem;
     }
 }
 
-/* Selected state matches gold hover */
+/* Selected state (stays active) */
 .sidebar-hover.selected {
-    background-color: #13294b !important;
+    background-color: #000020 !important;
     border-radius: 6px;
 }
+.sidebar-hover.selected .v-list-item-title,
+.sidebar-hover.selected .v-icon {
+    color: white !important;
+}
 
-.sidebar-hover.selected ::v-deep(.v-list-item-title),
-.sidebar-hover.selected ::v-deep(.v-icon) {
+/* ✅ Click/press only (temporary, not staying) */
+.sidebar-hover:active {
+    background-color: #000020 !important;
+    border-radius: 6px;
+}
+.sidebar-hover:active .v-list-item-title,
+.sidebar-hover:active .v-icon {
     color: black !important;
 }
 
 /* Hover effect */
 .sidebar-hover:hover {
-    background-color: #baa82c;
+    background-color: #808080;
     transition: background-color 0.3s ease, color 0.3s ease;
     border-radius: 6px;
     cursor: pointer;
 }
-
-/* Make entire navigation drawer gold */
-.gold-sidebar {
-    background-color: #4c3629 !important;
-    color: #000;
-}
-
-/* Custom class to remove underline from the <a> tag generated by Inertia's Link */
-.no-underline-v-list-item {
-    text-decoration: none !important;
-}
-
-/* Ensure the title and icon within the list item also inherit or are set to white when not selected */
-.no-underline-v-list-item .v-list-item-title,
-.no-underline-v-list-item .v-icon {
+.sidebar-hover:hover .v-list-item-title,
+.sidebar-hover:hover .v-icon {
     color: white !important;
 }
 
 /* NEW CSS for custom ripple color */
 .sidebar-hover :deep(.v-ripple__container) {
-    color: white !important; /* This targets the ripple color directly */
+    color: white !important;
+}
+
+/* Remove underline from Inertia's Link */
+.no-underline-v-list-item {
+    text-decoration: none !important;
+}
+
+/* ✅ Make ALL sidebar text and icons white by default */
+.no-underline-v-list-item .v-list-item-title,
+.no-underline-v-list-item .v-icon {
+    color: white !important;
 }
 </style>

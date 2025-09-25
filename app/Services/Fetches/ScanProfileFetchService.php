@@ -25,9 +25,6 @@ class ScanProfileFetchService implements ScanProfileFetchInterface
     public function indexScanProfile(array $request = [], bool $isPaginated = false, ?string $resourceClass = null): array
     {
         $query = Profile::query();
-        $propertId = $request['property_id'];
-
-        $query = $query->where('profile_id', "=", $propertId);
 
         if ($resourceClass !== null && isset($resourceClass::$relations)) {
             $query->with($resourceClass::$relations ?? []);
@@ -38,6 +35,14 @@ class ScanProfileFetchService implements ScanProfileFetchInterface
             $search = $request['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('unique_identifier', "=", "{$search}");
+            });
+        }
+
+
+        if (isset($request['property_id']) && !empty($request['property_id'])) {
+            $propertyId = $request['property_id'];
+            $query->where(function ($q) use ($propertyId) {
+                $q->where('property_id', "=", "{$propertyId}");
             });
         }
 

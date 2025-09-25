@@ -26,6 +26,14 @@ class Profile extends Model
     }
 
     /**
+     * Get the user that owns the profile.
+     */
+    public function property(): BelongsTo
+    {
+        return $this->belongsTo(Property::class, 'property_id');
+    }
+
+    /**
      * Get the full name of the profile, with the middle name shortened to its initials.
      *
      * Example:

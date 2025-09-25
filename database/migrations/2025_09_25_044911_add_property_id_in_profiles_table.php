@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('profiles', function (Blueprint $table) {
-            $table->foreignId('property_id')->constrained()->onDelete('restrict');
+            $table->foreignId('property_id')->nullable()->onDelete('restrict');
         });
     }
 
