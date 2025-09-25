@@ -1,20 +1,8 @@
 <template>
-    <v-card
-        width="auto"
-        max-width="1000"
-        prepend-icon="mdi-qrcode-scan"
-        title="Scan QR"
-    >
-        <!-- Make the container take full height for vertical centering -->
-        <v-container
-            class="d-flex align-center justify-center"
-            style="min-height: 40vh"
-        >
-            <div id="reader" style="width: 300px"></div>
-        </v-container>
-        
-        <h1>{{ scanned }}</h1>
-    </v-card>
+    <!-- Make the container take full height for vertical centering -->
+    <v-container>
+        <div id="reader"></div>
+    </v-container>
 </template>
 
 <script setup>
@@ -27,9 +15,10 @@ const props = defineProps({
     btnDisabled: Boolean,
 });
 
-const scanned = ref(null);
 let html5QrCode;
 let timeoutId;
+
+const emits = defineEmits(["scanned"]);
 
 const startScanner = async () => {
     await nextTick(); // Wait until #reader is in the DOM
@@ -61,11 +50,24 @@ const stopScanner = async () => {
         html5QrCode.getState() === Html5QrcodeScannerState.SCANNING
     ) {
         await html5QrCode.stop();
+        emits("scanned", scanned.value);
         await html5QrCode.clear();
     }
 };
 
-watch;
+const scanned = ref(null);
+
+watch(
+    scanned,
+    (value) => {
+        if (value !== null) {
+            stopScanner();
+        }
+    },
+    {
+        deep: true,
+    }
+);
 
 onMounted(() => {
     startScanner();

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->boolean('isAdmin')->default(false);
+            $table->boolean('is_able_to_login')->default(false);
             $table->timestamp('last_login_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
