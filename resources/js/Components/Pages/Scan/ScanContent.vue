@@ -3,18 +3,29 @@
         <v-row>
             <v-col cols="12" md="12" lg="12" xl="12" xxl="12">
                 <v-row justify="center">
-                    <v-col cols="4" md="4" lg="4" xl="4" xxl="4">
+                    <v-col
+                        cols="10"
+                        xs="10"
+                        sm="6"
+                        md="6"
+                        lg="4"
+                        xl="3"
+                        xxl="3"
+                    >
                         <v-card
-                            class="mb-6"
                             rounded="xl"
                             elevation="0"
+                            title="Scan QR"
+                            prepend-icon="mdi-qrcode-scan"
                             variant="outlined"
                             border="primary"
                         >
                             <v-container
-                                class="camera-container position-relative"
+                                class="d-flex justify-center"
+                                style="min-height: 200px"
                             >
-                                <v-responsive
+                                <ReadQrCode />
+                                <!-- <v-responsive
                                     aspect-ratio="1"
                                     class="camera-viewfinder"
                                 >
@@ -40,7 +51,7 @@
                                             />
                                         </v-btn>
                                     </v-container>
-                                </v-responsive>
+                                </v-responsive> -->
                             </v-container>
                         </v-card>
                     </v-col>
@@ -129,6 +140,7 @@
 import { ref } from "vue";
 import SvgIcon from "@jamescoyle/vue-icon";
 import { mdiQrcode, mdiCameraFlip, mdiCamera } from "@mdi/js";
+import ReadQrCode from "./Components/ReadQrCode.vue";
 
 const scanned = ref([
     {

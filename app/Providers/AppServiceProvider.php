@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Interfaces\AccountInterface;
 use App\Interfaces\Fetches\PropertyFetchInterface;
 use App\Interfaces\Fetches\ScanHistoryFetchInterface;
+use App\Interfaces\Fetches\ScanProfileFetchInterface;
 use App\Interfaces\ProfileInterface;
 use App\Interfaces\PropertyInterface;
 use App\Interfaces\ScanHistoryInterface;
@@ -13,6 +14,7 @@ use App\Interfaces\UserInterface;
 use App\Services\AccountService;
 use App\Services\Fetches\PropertyFetchService;
 use App\Services\Fetches\ScanHistoryFetchService;
+use App\Services\Fetches\ScanProfileFetchService;
 use App\Services\ProfileService;
 use App\Services\PropertyService;
 use App\Services\ScanHistoryService;
@@ -41,6 +43,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ScanHistoryFetchInterface::class, ScanHistoryFetchService::class);
         // scan 
         $this->app->bind(ScanProcessInterface::class, ScanProcessService::class);
+
+        //scan profile
+        $this->app->bind(ScanProfileFetchInterface::class, ScanProfileFetchService::class);
     }
 
     /**

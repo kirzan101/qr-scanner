@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -47,6 +48,18 @@ class HandleInertiaRequests extends Middleware
                         'error' => $request->session()->get('error'),
                     ];
                 },
+                'auth' => Auth::check() ? [
+                    'user' => [
+                        'username' => Auth::user()->username,
+                        'name' => Auth::user()->profile->getFullName(),
+                        'nickname' => Auth::user()->profile->nickname,
+                        'email' => Auth::user()->email,
+                        'isAdmin' => (bool) Auth::user()->is_admin,
+                        'isFirstLogin' => (bool) Auth::user()->is_first_login,
+                        'isAbleToLogin' => (bool) Auth::user()->is_able_to_login,
+                        'property_id' => (int) Auth::user()->profile->property_id,
+                    ]
+                ] : null,
             ]);
     }
 }
