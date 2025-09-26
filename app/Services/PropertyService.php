@@ -44,12 +44,11 @@ class PropertyService implements PropertyInterface
     {
         try {
             return DB::transaction(function () use ($propertyId, $data) {
-                $property = Property::findOrFail($propertyId);
+                $property = Property::create([
+                    'name' => $data['name'] ?? null,
+                    'code' => $data['code'] ?? null,
+                    'description' => $data['description'] ?? null
 
-                $property = tap($property)->update([
-                    'name' => $data['name'] ?? $property->name,
-                    'code' => $data['code'] ?? $property->code,
-                    'description' => $data['description'] ?? $property->description
                 ]);
 
                 return $this->returnModel(200, Helper::SUCCESS, 'Property updated successfully!', $property, $property->id);

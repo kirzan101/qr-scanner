@@ -212,6 +212,10 @@ const systemLinks = [
         module: "departments",
         icon: "mdi-office-building"
     },
+    {
+        module: "properties",
+        icon: "mdi-office-building"
+    },
 ];
 
 const moduleLink = (module) => module.replace(/_/g, "-");

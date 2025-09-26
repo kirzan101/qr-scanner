@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\ScanController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,3 +28,4 @@ Route::post('/scans', [ScanController::class, 'scan'])->name('scan');
 //profile
 Route::resource('profiles', ProfileController::class)->except(['create', 'edit', 'show']);
 Route::resource('departments', DepartmentController::class)->except(['create', 'edit', 'show']);
+Route::resource('properties', PropertyController::class)->except(['create', 'edit', 'show']);
