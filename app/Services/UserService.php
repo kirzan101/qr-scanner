@@ -52,6 +52,7 @@ class UserService implements UserInterface
                     'username' => $data['username'] ?? $user->username,
                     'email' => $data['email'] ?? $user->email,
                     'isAdmin' => $data['isAdmin'] ?? $user->isAdmin,
+                    'is_able_to_login' => $data['is_able_to_login'] ?? $user->is_able_to_login,
                 ]);
 
                 return $this->returnModel(200, Helper::SUCCESS, 'User updated successfully!', $user, $user->id);

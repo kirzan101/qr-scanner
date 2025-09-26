@@ -64,6 +64,14 @@ class ProfileService implements ProfileInterface
             return DB::transaction(function () use ($profileId, $data) {
                 $profile = Profile::findOrFail($profileId);
 
+                $userResult = $this->user->updateUser($profile->user_id, $data);
+
+                if ($userResult['status'] === Helper::ERROR) {
+                    throw ValidationException::withMessages([
+                        'errors' =>  'Error on creation user: ' . $userResult['message']
+                    ]);
+                }
+
                 $profile = tap($profile)->update([
                     'first_name' => $data['first_name'] ?? $profile->first_name,
                     'middle_name' => $data['middle_name'] ?? $profile->middle_name,
