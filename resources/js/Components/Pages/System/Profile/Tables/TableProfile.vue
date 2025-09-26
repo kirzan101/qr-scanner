@@ -26,22 +26,46 @@ const props = defineProps({
 
 const headers = ref([
     {
-        title: "First Name",
+        title: "Full Name",
         align: "start",
         sortable: false,
-        key: "first_name",
+        key: "full_name",
     },
     {
-        title: "Middle Name",
+        title: "Unique Identifier",
         align: "start",
         sortable: false,
-        key: "middle_name",
+        key: "unique_identifier",
     },
     {
-        title: "last Name",
+        title: "Username",
         align: "start",
         sortable: false,
-        key: "last_name",
+        key: "username",
+    },
+    {
+        title: "Email Address",
+        align: "start",
+        sortable: false,
+        key: "email",
+    },
+    {
+        title: "Position",
+        align: "start",
+        sortable: false,
+        key: "position",
+    },
+    {
+        title: "Property",
+        align: "start",
+        sortable: false,
+        key: "property_id",
+    },
+    {
+        title: "Is Able to Login",
+        align: "start",
+        sortable: false,
+        key: "is_able_to_login",
     },
     {
         title: "Last Login",

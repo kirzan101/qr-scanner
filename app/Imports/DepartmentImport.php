@@ -12,8 +12,10 @@ use Illuminate\Support\Facades\DB;
 class DepartmentImport implements ToModel, WithHeadingRow
 {
     /**
+     *
+     *
      * @param array $row
-     * @return \Illuminate\Database\Eloquent\Model|null
+     * @return void
      */
     public function model(array $row)
     {
@@ -37,15 +39,23 @@ class DepartmentImport implements ToModel, WithHeadingRow
 
             // If the department does not exist, create it with a unique code.
             if (!$department) {
-                // Generate an acronym from the cleaned name.
                 $words = preg_split('/\s+/', $processedName, -1, PREG_SPLIT_NO_EMPTY);
-                
-                // If there's only one word, use the whole word as the base acronym.
-                // Otherwise, use the first letter of each word.
-                if (count($words) === 1) {
-                    $baseAcronym = strtoupper($words[0]);
+                $wordCount = count($words);
+                $baseAcronym = '';
+
+                if ($wordCount === 1) {
+                    // Rule: For single-word names, take the first 3 letters.
+                    $baseAcronym = mb_substr(strtoupper($words[0]), 0, 3);
+                } elseif ($wordCount === 2) {
+                    // Rule: For two-word names, take the first 2 letters of each word.
+                    $baseAcronym = strtoupper(mb_substr($words[0], 0, 2) . mb_substr($words[1], 0, 2));
                 } else {
+                    // Rule: For three or more words, take the first letter of each.
                     $baseAcronym = strtoupper(collect($words)->map(fn($word) => mb_substr($word, 0, 1))->join(''));
+                    // Fallback: If the acronym is too short, use the first 3 letters of the full name.
+                    if (mb_strlen($baseAcronym) < 3) {
+                        $baseAcronym = mb_substr(strtoupper(str_replace(' ', '', $processedName)), 0, 3);
+                    }
                 }
 
                 // Ensure the generated code is unique (checking soft-deleted records too).
@@ -66,11 +76,9 @@ class DepartmentImport implements ToModel, WithHeadingRow
 
             return $department;
         } catch (Exception $e) {
+            dd($e->getMessage(), $row['name']);
             DB::rollBack();
-            // It's better to log the error instead of using dd() in a production environment.
-            // You can replace this with your preferred logging mechanism.
-            // For example:
-            // Log::error('Department import failed for row: ' . json_encode($row), ['exception' => $e]);
+
             return null;
         }
     }
