@@ -208,6 +208,10 @@ const systemLinks = [
         module: "profiles",
         icon: "mdi-card-account-details-outline",
     },
+    {
+        module: "departments",
+        icon: "mdi-office-building"
+    },
 ];
 
 const moduleLink = (module) => module.replace(/_/g, "-");

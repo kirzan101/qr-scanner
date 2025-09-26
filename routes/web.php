@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScanController;
 use Illuminate\Support\Facades\Route;
@@ -25,3 +26,4 @@ Route::resource('scans', ScanController::class)->except(['create', 'edit', 'show
 Route::post('/scans', [ScanController::class, 'scan'])->name('scan');
 //profile
 Route::resource('profiles', ProfileController::class)->except(['create', 'edit', 'show']);
+Route::resource('departments', DepartmentController::class)->except(['create', 'edit', 'show']);

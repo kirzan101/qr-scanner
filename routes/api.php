@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\DepartmentApiController;
 use App\Http\Controllers\API\ScanAPIController;
 use App\Http\Controllers\API\ScanProfileApiController;
 use Illuminate\Http\Request;
@@ -13,3 +14,6 @@ Route::get('/user', function (Request $request) {
 
 // //profile api
 Route::get('/profiles', [ScanProfileApiController::class, 'index']);
+Route::get('/departments', [DepartmentApiController::class, 'index']);
+
+
