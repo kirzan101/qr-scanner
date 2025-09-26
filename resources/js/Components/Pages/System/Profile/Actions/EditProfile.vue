@@ -1,9 +1,17 @@
 <template>
-    <v-btn-edit
-        v-if="showBtn && can.includes('update')"
-        :label="profile.name"
+    <v-btn
+        v-if="showBtn"
+        class="ma-1"
+        variant="tonal"
+        color="primary"
+        size="small"
+        prepend-icon="mdi-pencil-circle"
+        v-tooltip:bottom="'Edit'"
         @click="toggleDialog"
-    />
+    >
+        {{ profile.full_name }}
+    </v-btn>
+
     <v-chip v-else variant="tonal" rounded>
         <v-tooltip
             class="ma-1"
@@ -11,30 +19,42 @@
             location="bottom"
             text="Unauthorized to edit"
         ></v-tooltip>
-        {{ profile.name.toUpperCase() }}
+        {{ profile.full_name.toUpperCase() }}
     </v-chip>
-    <v-dialog
-        v-model="dialog"
-        width="1000"
-        title="Edit Profile"
-        prependIcon="mdi-pencil-circle"
-        persistent
-        :btnDisabled="btnDisabled"
-        @close="toggleDialog"
-        @submit="handleSubmit"
-    >
-        <v-container>
-            <FormProfile
-                :profile="profile"
-                :user_groups="user_groups"
-                :account_types="account_types"
-                :errors="errors"
-                :flash="flash"
-                :can="can"
-                @formValues="getFormProfileValue"
-                ref="formProfileRef"
-            />
-        </v-container>
+
+    <v-dialog v-model="dialog" width="750" persistent>
+        <v-card
+            width="auto"
+            max-width="1000"
+            prepend-icon="mdi-plus"
+            title="Add Employee"
+        >
+            <v-container>
+                <FormProfile
+                    :profile="profile"
+                    :errors="errors"
+                    :flash="flash"
+                    :can="can"
+                    @formValues="getFormProfileValue"
+                    ref="formProfileRef"
+                />
+            </v-container>
+
+            <template v-slot:actions>
+                <v-btn :disabled="btnDisabled" @click="toggleDialog">
+                    close
+                </v-btn>
+                <v-btn
+                    :disabled="btnDisabled"
+                    :loading="btnDisabled"
+                    variant="elevated"
+                    prepend-icon="mdi-check-circle"
+                    @click="handleSubmit"
+                >
+                    save
+                </v-btn>
+            </template>
+        </v-card>
     </v-dialog>
 
     <SnackBar ref="snackBarRef" />

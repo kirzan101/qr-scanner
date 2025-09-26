@@ -28,6 +28,7 @@ class UserService implements UserInterface
                     'email' => $data['email'] ?? null,
                     'password' => bcrypt($data['password'] ?? 'password'),
                     'isAdmin' => $data['isAdmin'] ?? false,
+                    'is_able_to_login' => $data['is_able_to_login'] ?? false
                 ]);
 
                 return $this->returnModel(201, Helper::SUCCESS, 'User created successfully!', $user, $user->id);

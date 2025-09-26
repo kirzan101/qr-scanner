@@ -5,13 +5,24 @@
         module="profiles"
         ref="tableDataRef"
     >
+        <template #item.full_name="{ item }">
+            <EditProfile
+                :profile="item"
+                :errors="props.errors"
+                :flash="props.flash"
+                :can="props.can"
+            />
+        </template>
+        <template #item.is_able_to_login="{ item }">
+            {{ item.is_able_to_login ? "Yes" : "No" }}
+        </template>
     </c-data-table-server>
 </template>
 
 <script setup>
 import { ref } from "vue";
 
-// import EditProfile from "../Actions/EditProfile.vue";
+import EditProfile from "../Actions/EditProfile.vue";
 // import ResetPassword from "../Actions/ResetPassword.vue";
 // import SetAccountStatus from "../Actions/SetAccountStatus.vue";
 

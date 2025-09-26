@@ -110,7 +110,7 @@ const form = ref({
     username: null,
     email: null,
     position: null,
-    is_able_to_login: false,
+    is_able_to_login: null,
 });
 
 watch(
@@ -145,10 +145,6 @@ watch(
     { deep: true }
 );
 // set error end
-
-const getContactNumbers = (inputs) => {
-    form.value.contact_numbers = inputs;
-};
 
 const emits = defineEmits(["formValues"]);
 
