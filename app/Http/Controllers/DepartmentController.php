@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DepartmentFormRequest;
 use App\Interfaces\DepartmentInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,12 +27,12 @@ class DepartmentController extends Controller
     }
 
     /**
-     * Store Property
+     * Store Department
      *
      * @param Request $request
      * @return void
      */
-    public function store(Request $request)
+    public function store(DepartmentFormRequest $request)
     {
         $result = $this->department->storeDepartment($request->all());
 
@@ -42,7 +43,7 @@ class DepartmentController extends Controller
     }
 
     /**
-     * Update property
+     * Update department
      *
      * @param Request $request
      * @param [type] $id
@@ -60,7 +61,7 @@ class DepartmentController extends Controller
 
 
     /**
-     * Delete property
+     * Delete department
      *
      * @param [type] $id
      * @return void
