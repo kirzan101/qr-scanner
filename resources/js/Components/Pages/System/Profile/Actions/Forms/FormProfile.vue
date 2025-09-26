@@ -62,6 +62,17 @@
                         :error-messages="formErrors.position"
                     />
                 </v-col>
+                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
+                    <v-checkbox
+                        hide-details="auto"
+                        variant="outlined"
+                        density="compact"
+                        color="primary"
+                        label="Is able to login?"
+                        v-model="form.is_able_to_login"
+                        :error-messages="formErrors.is_able_to_login"
+                    />
+                </v-col>
                 <v-col cols="12" md="12" lg="12" xl="12" xxl="12">
                     <v-text-field
                         hide-details="auto"
@@ -99,6 +110,7 @@ const form = ref({
     username: null,
     email: null,
     position: null,
+    is_able_to_login: false,
 });
 
 watch(
