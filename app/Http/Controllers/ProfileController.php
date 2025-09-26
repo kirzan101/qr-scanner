@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileFormRequest;
 use App\Interfaces\ProfileInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -31,7 +32,7 @@ class ProfileController extends Controller
      * @param Request $request
      * @return void
      */
-    public function store(Request $request)
+    public function store(ProfileFormRequest $request)
     {
         $result = $this->profile->storeProfile($request->all());
 

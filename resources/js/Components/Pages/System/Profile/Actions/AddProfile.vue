@@ -91,8 +91,8 @@ const btnDisabled = ref(false);
 const handleSubmit = () => {
     toggleFormProfileRef();
 
-    console.log(form.value);
-    return;
+    // console.log(form.value);
+    // return;
 
     // submission here
     router.post("/profiles", form.value, {
