@@ -5,7 +5,7 @@
       <!-- Left side: Camera and some last scanned items -->
       <v-col cols="6" class="pr-2">
         <CardQrScanner />
-        
+
         <v-card class="mt-4" elevation="2" rounded="lg">
           <v-card-title class="text-h6 font-weight-bold pa-4">
             Recent Scanned:
@@ -22,7 +22,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-      
+
       <!-- Right side: Complete history with pagination -->
       <v-col cols="6" class="pl-2">
         <v-card elevation="2" rounded="lg">
@@ -38,7 +38,7 @@
               @handleQRClick="handleQRClick"
             />
           </v-card-text>
-          
+
           <!-- Pagination for web right column -->
           <v-card-actions class="justify-center" v-if="totalPagesWeb > 1">
             <v-pagination
@@ -57,7 +57,7 @@
     <v-container class="d-flex d-md-none" fluid>
       <v-col cols="12">
         <CardQrScanner />
-        
+
         <v-card class="mt-4" elevation="2" rounded="lg">
           <v-card-text class="pa-2">
             <CardLastScanned
@@ -68,7 +68,7 @@
               @handleQRClick="handleQRClick"
             />
           </v-card-text>
-          
+
           <!-- Pagination for mobile view -->
           <v-card-actions class="justify-center" v-if="totalPages > 1">
             <v-pagination
