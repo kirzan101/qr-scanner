@@ -2,7 +2,13 @@
     <Head :title="title" />
     <MainLayout :errors="errors" :flash="flash" :can="can">
         <v-container>
-            <ProfileContent :flash="flash" :errors="errors" :can="can" />
+            <ProfileContent
+                :departments="departments"
+                :positions="positions"
+                :flash="flash"
+                :errors="errors"
+                :can="can"
+            />
         </v-container>
     </MainLayout>
 </template>
@@ -15,6 +21,8 @@ import MainLayout from "../../Layouts/MainLayout.vue";
 import ProfileContent from "../../Components/Pages/System/Profile/ProfileContent.vue";
 
 defineProps({
+    departments: Array,
+    positions: Array,
     errors: Object,
     flash: Object,
     can: Array,

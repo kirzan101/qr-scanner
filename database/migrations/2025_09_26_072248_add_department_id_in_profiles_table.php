@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('profiles', function (Blueprint $table) {
-            $table->foreignId('property_id')->after('position')->nullable()->onDelete('restrict');
+            $table->foreignId('department_id')->after('property_id')->constrained()->onDelete('restrict');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('profiles', function (Blueprint $table) {
-            $table->dropForeignId('property_id');
+            $table->dropForeignId('department_id');
         });
     }
 };

@@ -44,6 +44,7 @@ class ProfileService implements ProfileInterface
                     'unique_identifier' => $data['unique_identifier'] ?? null,
                     'position' => $data['position'] ?? null,
                     'property_id' => $data['property_id'] ?? 1,
+                    'department_id' => $data['department_id'] ?? 1,
                     'user_id' => $userResult['last_id'] ?? null,
                 ]);
 
@@ -78,6 +79,7 @@ class ProfileService implements ProfileInterface
                     'last_name' => $data['last_name'] ?? $profile->last_name,
                     'unique_identifier' => $data['unique_identifier'] ?? $profile->unique_identifier,
                     'property_id' => $data['property_id'] ?? $profile->property_id,
+                    'department_id' => $data['department_id'] ?? $profile->department_id,
                     'position' => $data['position'] ?? $profile->position,
                 ]);
 

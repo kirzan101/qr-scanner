@@ -14,6 +14,7 @@ class Profile extends Model
         'last_name',
         'unique_identifier', // e.g., student number or employee ID
         'position', // e.g., job title or OJT
+        'department_id',
         'property_id'
     ];
 
@@ -31,6 +32,14 @@ class Profile extends Model
     public function property(): BelongsTo
     {
         return $this->belongsTo(Property::class, 'property_id');
+    }
+
+    /**
+     * Get the department that the profile belongs to.
+     */
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'department_id');
     }
 
     /**

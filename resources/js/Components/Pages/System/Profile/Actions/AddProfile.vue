@@ -8,10 +8,12 @@
             width="auto"
             max-width="1000"
             prepend-icon="mdi-plus"
-            title="Add Employee"
+            title="Add Profile"
         >
             <v-container>
                 <FormProfile
+                    :departments="departments"
+                    :positions="positions"
                     :errors="errors"
                     :flash="flash"
                     :can="can"
@@ -58,6 +60,8 @@ defineProps({
         type: Boolean,
         default: true,
     },
+    positions: Array,
+    departments: Array,
     errors: Object,
     flash: Object,
     can: Array,

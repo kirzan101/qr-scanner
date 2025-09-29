@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helper;
 use App\Http\Requests\ProfileFormRequest;
+use App\Interfaces\Fetches\DepartmentFetchInterface;
 use App\Interfaces\ProfileInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class ProfileController extends Controller
 {
     public function __construct(
-        private ProfileInterface $profile
+        private ProfileInterface $profile,
+        private DepartmentFetchInterface $departmentFetch,
     ) {}
 
 
@@ -21,8 +25,15 @@ class ProfileController extends Controller
      */
     public function index()
     {
+
+        $departments = Cache::remember('profile_departments', 60, function () {
+            return $this->departmentFetch->index();
+        });
+
         return Inertia::render('System/Profiles', [
-            'can' => []
+            'can' => [],
+            'departments' => $departments['data'],
+            'positions' => Helper::PROFILE_POSITIONS,
         ]);
     }
 
