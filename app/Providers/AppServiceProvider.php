@@ -50,7 +50,7 @@ class AppServiceProvider extends ServiceProvider
         // scan history
         $this->app->bind(ScanHistoryInterface::class, ScanHistoryService::class);
         $this->app->bind(ScanHistoryFetchInterface::class, ScanHistoryFetchService::class);
-        // scan 
+        // scan
         $this->app->bind(ScanProcessInterface::class, ScanProcessService::class);
 
         //scan profile

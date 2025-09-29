@@ -19,7 +19,7 @@ class PropertyController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Properties', [
+        return Inertia::render('System/Properties', [
             'can' => []
         ]);
     }

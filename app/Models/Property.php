@@ -11,4 +11,5 @@ class Property extends Model
         'code',
         'description',
     ];
+
 }
