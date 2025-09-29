@@ -27,4 +27,6 @@ const appName = computed(() => {
 const title = computed(() => {
     return `Properties — ${appName.value}`;
 });
+
+//initial commit
 </script>
