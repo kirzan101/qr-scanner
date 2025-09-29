@@ -10,6 +10,8 @@
                     <v-card-title>
                         Profiles
                         <AddProfile
+                            :departments="departments"
+                            :positions="positions"
                             :errors="errors"
                             :flash="flash"
                             :can="can"
@@ -24,6 +26,8 @@
             <TableProfile
                 :user_groups="user_groups"
                 :account_types="account_types"
+                :departments="departments"
+                :positions="positions"
                 :errors="errors"
                 :flash="flash"
                 :can="can"
@@ -45,6 +49,8 @@ import AddProfile from "./Actions/AddProfile.vue";
 const props = defineProps({
     user_groups: Array,
     account_types: Array,
+    departments: Array,
+    positions: Array,
     errors: Object,
     flash: Object,
     can: Array,

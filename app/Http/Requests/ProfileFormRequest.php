@@ -57,6 +57,7 @@ class ProfileFormRequest extends FormRequest
             'last_name' => 'required|string|max:50',
             'unique_identifier' => 'required|string|max:50|unique:profiles,unique_identifier',
             // 'property_id' => 'required|integer|exists:properties,id',
+            'department_id' => 'required|integer|exists:departments,id',
             'position' => 'nullable|string|max:50',
 
         ];

@@ -5,13 +5,18 @@
         module="profiles"
         ref="tableDataRef"
     >
-        <template #item.full_name="{ item }">
+        <template #item.unique_identifier="{ item }">
             <EditProfile
                 :profile="item"
+                :departments="departments"
+                :positions="positions"
                 :errors="props.errors"
                 :flash="props.flash"
                 :can="props.can"
             />
+        </template>
+        <template #item.department_id="{ item }">
+            {{ departmentName(item.department_id) }}
         </template>
         <template #item.is_able_to_login="{ item }">
             {{ item.is_able_to_login ? "Yes" : "No" }}
@@ -30,6 +35,8 @@ import EditProfile from "../Actions/EditProfile.vue";
 const props = defineProps({
     user_groups: Array,
     account_types: Array,
+    departments: Array,
+    positions: Array,
     errors: Object,
     flash: Object,
     can: Array,
@@ -37,28 +44,22 @@ const props = defineProps({
 
 const headers = ref([
     {
-        title: "Full Name",
-        align: "start",
-        sortable: false,
-        key: "full_name",
-    },
-    {
         title: "Unique Identifier",
         align: "start",
         sortable: false,
         key: "unique_identifier",
     },
     {
+        title: "Full Name",
+        align: "start",
+        sortable: false,
+        key: "full_name",
+    },
+    {
         title: "Username",
         align: "start",
         sortable: false,
         key: "username",
-    },
-    {
-        title: "Email Address",
-        align: "start",
-        sortable: false,
-        key: "email",
     },
     {
         title: "Position",
@@ -71,6 +72,12 @@ const headers = ref([
         align: "start",
         sortable: false,
         key: "property_id",
+    },
+    {
+        title: "Department",
+        align: "start",
+        sortable: false,
+        key: "department_id",
     },
     {
         title: "Is Able to Login",
@@ -97,6 +104,16 @@ const headers = ref([
         key: "actions",
     },
 ]);
+
+const departmentName = (departmentId) => {
+    if (props.departments) {
+        const department = props.departments.find(
+            (department) => department.id === departmentId
+        );
+        return department ? department.name : "";
+    }
+    return "";
+};
 
 const tableDataRef = ref(null);
 const toggleLoadData = (value = {}) => {

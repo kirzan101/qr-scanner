@@ -9,17 +9,17 @@
         v-tooltip:bottom="'Edit'"
         @click="toggleDialog"
     >
-        {{ profile.full_name }}
+        {{ profile.unique_identifier }}
     </v-btn>
 
-    <v-chip v-else variant="tonal" rounded>
+    <v-chip v-else="" variant="tonal" rounded>
         <v-tooltip
             class="ma-1"
             activator="parent"
             location="bottom"
             text="Unauthorized to edit"
         ></v-tooltip>
-        {{ profile.full_name.toUpperCase() }}
+        {{ profile.unique_identifier.toUpperCase() }}
     </v-chip>
 
     <v-dialog v-model="dialog" width="750" persistent>
@@ -27,11 +27,13 @@
             width="auto"
             max-width="1000"
             prepend-icon="mdi-plus"
-            title="Add Employee"
+            title="Add Profile"
         >
             <v-container>
                 <FormProfile
                     :profile="profile"
+                    :departments="departments"
+                    :positions="positions"
                     :errors="errors"
                     :flash="flash"
                     :can="can"
@@ -81,6 +83,8 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    departments: Array,
+    positions: Array,
     user_groups: Array,
     account_types: Array,
     errors: Object,

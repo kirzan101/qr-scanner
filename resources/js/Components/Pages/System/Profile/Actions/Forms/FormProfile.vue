@@ -57,9 +57,27 @@
                         hide-details="auto"
                         variant="outlined"
                         density="compact"
+                        label="Email"
+                        type="email"
+                        v-model="form.email"
+                        :error-messages="formErrors.email"
+                    />
+                </v-col>
+                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
+                    <PositionSelect
                         label="Position"
                         v-model="form.position"
+                        :positions="positions"
+                        :departments="departments"
                         :error-messages="formErrors.position"
+                    />
+                </v-col>
+                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
+                    <DepartmentAutoComplete
+                        label="Department"
+                        v-model="form.department_id"
+                        :departments="departments"
+                        :error-messages="formErrors.department_id"
                     />
                 </v-col>
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
@@ -73,17 +91,6 @@
                         :error-messages="formErrors.is_able_to_login"
                     />
                 </v-col>
-                <v-col cols="12" md="12" lg="12" xl="12" xxl="12">
-                    <v-text-field
-                        hide-details="auto"
-                        variant="outlined"
-                        density="compact"
-                        label="Email"
-                        type="email"
-                        v-model="form.email"
-                        :error-messages="formErrors.email"
-                    />
-                </v-col>
             </v-row>
         </v-container>
     </v-form>
@@ -91,9 +98,13 @@
 
 <script setup>
 import { ref, watch } from "vue";
+import DepartmentAutoComplete from "./Components/DepartmentAutoComplete.vue";
+import PositionSelect from "./Components/PositionSelect.vue";
 
 const props = defineProps({
     profile: Object,
+    departments: Array,
+    positions: Array,
     user_groups: Array,
     account_types: Array,
     errors: Object,
@@ -111,6 +122,7 @@ const form = ref({
     email: null,
     position: null,
     is_able_to_login: null,
+    department_id: null,
 });
 
 watch(

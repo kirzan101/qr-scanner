@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('profiles', function (Blueprint $table) {
-            $table->foreignId('property_id')->after('position')->nullable()->onDelete('restrict');
+        Schema::create('meal_schedule_items', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('meal_schedule_id')->constrained()->onDelete('restrict');
+            $table->time('time');
+            $table->string('meal_type');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('profiles', function (Blueprint $table) {
-            $table->dropForeignId('property_id');
-        });
+        Schema::dropIfExists('meal_schedule_items');
     }
 };

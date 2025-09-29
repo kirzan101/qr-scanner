@@ -55,6 +55,27 @@ class Helper
     const MEAL_SCHEDULE_DINNER = 'dinner';
 
     /**
+     * Meal Schedule Days
+     */
+    const MEAL_SCHEDULE_DAYS = [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+    ];
+    const MEAL_SCHEDULE_DAY_MONDAY = 'Monday';
+    const MEAL_SCHEDULE_DAY_TUESDAY = 'Tuesday';
+    const MEAL_SCHEDULE_DAY_WEDNESDAY = 'Wednesday';
+    const MEAL_SCHEDULE_DAY_THURSDAY = 'Thursday';
+    const MEAL_SCHEDULE_DAY_FRIDAY = 'Friday';
+    const MEAL_SCHEDULE_DAY_SATURDAY = 'Saturday';
+    const MEAL_SCHEDULE_DAY_SUNDAY = 'Sunday';
+
+
+    /**
      * Profile Positions
      */
     const PROFILE_POSITIONS = [

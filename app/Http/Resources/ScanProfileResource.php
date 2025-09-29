@@ -31,6 +31,7 @@ class ScanProfileResource extends JsonResource
             'unique_identifier' => $this->unique_identifier,
             'position' => $this->position,
             'property_id' => $this->property_id,
+            'department_id' => $this->department_id,
             'created_at' => $this->returnShortDateTime($this->created_at),
             'updated_at' => $this->returnShortDateTime($this->updated_at),
         ];
