@@ -9,6 +9,7 @@ use App\Interfaces\Fetches\PropertyFetchInterface;
 use App\Interfaces\Fetches\ScanHistoryFetchInterface;
 use App\Interfaces\Fetches\ScanProfileFetchInterface;
 use App\Interfaces\ProfileInterface;
+use App\Interfaces\ProfileMealScheduleInterface;
 use App\Interfaces\PropertyInterface;
 use App\Interfaces\ScanHistoryInterface;
 use App\Interfaces\ScanProcessInterface;
@@ -19,6 +20,7 @@ use App\Services\Fetches\DepartmentFetchService;
 use App\Services\Fetches\PropertyFetchService;
 use App\Services\Fetches\ScanHistoryFetchService;
 use App\Services\Fetches\ScanProfileFetchService;
+use App\Services\ProfileMealScheduleService;
 use App\Services\ProfileService;
 use App\Services\PropertyService;
 use App\Services\ScanHistoryService;
@@ -55,6 +57,9 @@ class AppServiceProvider extends ServiceProvider
 
         //scan profile
         $this->app->bind(ScanProfileFetchInterface::class, ScanProfileFetchService::class);
+
+        //profile meal schedule
+        $this->app->bind(ProfileMealScheduleInterface::class, ProfileMealScheduleService::class);
     }
 
     /**

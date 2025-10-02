@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Helpers\Helper;
 use App\Interfaces\ScanHistoryInterface;
 use App\Interfaces\ScanProcessInterface;
+use App\Models\Profile;
 use App\Traits\EnsureSuccessTrait;
 use App\Traits\HttpErrorCodeTrait;
 use App\Traits\ReturnModelCollectionTrait;
@@ -30,17 +31,24 @@ class ScanProcessService implements ScanProcessInterface
     {
         try {
             return DB::transaction(function () use ($data) {
-                $scanData = [
-                    'profile_id' => $data['profile_id'],
-                    'scanned_at' => Carbon::now(),
-                    'property_id' => $data['property_id'],
-                    'meal_schedule' => $data['meal_schedule'] // e.g., breakfast, lunch, dinner
-                ];
 
-                $scanResult = $this->scanHistory->storeScanHistory($scanData);
-                $this->ensureSuccess($scanResult, 'Failed to scan.');
+                $profile = Profile::where('unique_identifier', $data['unique_identifier'])->first();
 
-                return $this->returnModel(201, Helper::SUCCESS, 'Successfully scanned!');
+
+                if ($profile) {
+                    $scanData = [
+                        'profile_id' => $profile->id,
+                        'scanned_at' => Carbon::now(),
+                        'property_id' => $profile->property_id,
+                        'meal_schedule' => 'Lunch' // e.g., breakfast, lunch, dinner
+                    ];
+
+                    $scanResult = $this->scanHistory->storeScanHistory($scanData);
+                    $this->ensureSuccess($scanResult, 'Failed to scan.');
+                    return $this->returnModel(201, Helper::SUCCESS, 'Successfully scanned!');
+                }
+
+                return $this->returnModel(200, Helper::SUCCESS, 'Profile not found');
             });
         } catch (\Throwable $th) {
             $code = $this->httpCode($th);
