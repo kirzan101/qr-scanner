@@ -5,13 +5,21 @@
         module="properties"
         ref="tableDataRef"
     >
+        <template #item.name="{ item }">
+            <EditProperty
+                :property="item"
+                :errors="props.errors"
+                :flash="props.flash"
+                :can="props.can"
+            />
+        </template>
     </c-data-table-server>
 </template>
 
 <script setup>
 import { ref } from "vue";
 
-// import EditProperty from "../Actions/EditProperty.vue";
+import EditProperty from "../Actions/EditProperty.vue";
 // import DeleteProperty from "../Actions/DeleteProperty.vue";
 
 // Define props
@@ -23,19 +31,19 @@ const props = defineProps({
 
 const headers = ref([
     {
-        title: "Property Name",
-        align: "start",
-        sortable: false,
-        key: "code",
-    },
-    {
-        title: "Property Code",
+        title: " Name",
         align: "start",
         sortable: false,
         key: "name",
     },
     {
-        title: "Property",
+        title: "Code",
+        align: "start",
+        sortable: false,
+        key: "code",
+    },
+    {
+        title: "Description",
         align: "start",
         sortable: false,
         key: "description",
