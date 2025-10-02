@@ -18,6 +18,7 @@ class Department extends Model
 
     /**
      * Get all profiles belonging to this department.
+     * one dept has many profile
      */
     public function profiles()
     {
