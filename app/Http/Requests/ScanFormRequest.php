@@ -22,9 +22,7 @@ class ScanFormRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'profile_id' => 'required|integer|exists:profiles,id',
-            'property_id' => 'required|integer|exists:properties,id',
-            'meal_schedule' => 'required|string|in:breakfast,lunch,dinner',
+            'unique_identifier' => 'required|exists:profiles,unique_identifier',
         ];
     }
 }
