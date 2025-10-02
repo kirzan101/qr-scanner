@@ -1,9 +1,17 @@
 <template>
-    <v-btn-edit
-        v-if="showBtn && can.includes('update')"
-        :label="department.name"
+    <v-btn
+        v-if="showBtn"
+        class="ma-1"
+        variant="tonal"
+        color="primary"
+        size="small"
+        prepend-icon="mdi-pencil-circle"
+        v-tooltip:bottom="'Edit'"
         @click="toggleDialog"
-    />
+    >
+        {{ department.name }}
+    </v-btn>
+
     <v-chip v-else variant="tonal" rounded>
         <v-tooltip
             class="ma-1"
@@ -13,26 +21,40 @@
         ></v-tooltip>
         {{ department.name.toUpperCase() }}
     </v-chip>
-    <v-dialog
-        v-model="dialog"
-        width="1000"
-        title="Edit Department"
-        prependIcon="mdi-pencil-circle"
-        persistent
-        :btnDisabled="btnDisabled"
-        @close="toggleDialog"
-        @submit="handleSubmit"
-    >
-        <v-container>
-            <FormDepartment
-                :department="department"
-                :errors="errors"
-                :flash="flash"
-                :can="can"
-                @formValues="getFormDepartmentValue"
-                ref="formDepartmentRef"
-            />
-        </v-container>
+
+    <v-dialog v-model="dialog" width="750" persistent>
+        <v-card
+            width="auto"
+            max-width="1000"
+            prepend-icon="mdi-pencil"
+            title="Edit Department"
+        >
+            <v-container>
+                <FormDepartment
+                    :department="department"
+                    :errors="errors"
+                    :flash="flash"
+                    :can="can"
+                    @formValues="getFormDepartmentValue"
+                    ref="formDepartmentRef"
+                />
+            </v-container>
+
+            <template v-slot:actions>
+                <v-btn :disabled="btnDisabled" @click="toggleDialog">
+                    close
+                </v-btn>
+                <v-btn
+                    :disabled="btnDisabled"
+                    :loading="btnDisabled"
+                    variant="elevated"
+                    prepend-icon="mdi-check-circle"
+                    @click="handleSubmit"
+                >
+                    save
+                </v-btn>
+            </template>
+        </v-card>
     </v-dialog>
 
     <SnackBar ref="snackBarRef" />
