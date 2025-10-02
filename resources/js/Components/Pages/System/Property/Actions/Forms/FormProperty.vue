@@ -6,7 +6,7 @@
                     <v-text-field
                         variant="outlined"
                         density="compact"
-                        label="Property Name"
+                        label="Name"
                         hide-details="auto"
                         v-model="form.name"
                         :error-messages="formErrors.name"
@@ -18,7 +18,7 @@
                         hide-details="auto"
                         variant="outlined"
                         density="compact"
-                        label="Property Code"
+                        label="Code"
                         v-model="form.code"
                         :error-messages="formErrors.code"
                         required

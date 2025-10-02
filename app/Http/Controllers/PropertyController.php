@@ -49,9 +49,11 @@ class PropertyController extends Controller
      */
     public function update(Request $request, $id)
     {
+
         $result = $this->property->updateProperty($id, $request->all());
 
         $status = $result['status'] ?? 'error';
+
         $message = $result['message'] ?? 'An error occurred';
 
         return redirect()->back()->with($status, $message);
