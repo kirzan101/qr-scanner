@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\PropertyController;
-use App\Http\Controllers\ScanController;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ScanController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\PropertyController;
+use App\Http\Controllers\DepartmentController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -29,3 +30,4 @@ Route::post('/scans', [ScanController::class, 'scan'])->name('scan');
 Route::resource('profiles', ProfileController::class)->except(['create', 'edit', 'show']);
 Route::resource('departments', DepartmentController::class)->except(['create', 'edit', 'show']);
 Route::resource('properties', PropertyController::class)->except(['create', 'edit', 'show']);
+Route::resource('locations', LocationController::class)->except(['create', 'edit', 'show']);
