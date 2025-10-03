@@ -12,6 +12,7 @@
                         <AddProfile
                             :departments="departments"
                             :positions="positions"
+                            :properties="properties"
                             :errors="errors"
                             :flash="flash"
                             :can="can"
@@ -24,10 +25,9 @@
                 </v-col>
             </v-row>
             <TableProfile
-                :user_groups="user_groups"
-                :account_types="account_types"
                 :departments="departments"
                 :positions="positions"
+                :properties="properties"
                 :errors="errors"
                 :flash="flash"
                 :can="can"
@@ -47,10 +47,9 @@ import AddProfile from "./Actions/AddProfile.vue";
 
 // Define props
 const props = defineProps({
-    user_groups: Array,
-    account_types: Array,
     departments: Array,
     positions: Array,
+    properties: Array,
     errors: Object,
     flash: Object,
     can: Array,

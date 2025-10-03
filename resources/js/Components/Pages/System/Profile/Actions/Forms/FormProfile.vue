@@ -68,7 +68,6 @@
                         label="Position"
                         v-model="form.position"
                         :positions="positions"
-                        :departments="departments"
                         :error-messages="formErrors.position"
                     />
                 </v-col>
@@ -78,6 +77,22 @@
                         v-model="form.department_id"
                         :departments="departments"
                         :error-messages="formErrors.department_id"
+                    />
+                </v-col>
+                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
+                    <PropertySelect
+                        label="Property"
+                        v-model="form.property_id"
+                        :properties="properties"
+                        :error-messages="formErrors.property_id"
+                    />
+                </v-col>
+                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
+                    <LocationSelect
+                        label="Location"
+                        v-model="form.location_id"
+                        :locations="locations()"
+                        :error-messages="formErrors.location_id"
                     />
                 </v-col>
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
@@ -97,16 +112,19 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import DepartmentAutoComplete from "./Components/DepartmentAutoComplete.vue";
 import PositionSelect from "./Components/PositionSelect.vue";
+import PropertySelect from "./Components/PropertySelect.vue";
+import LocationSelect from "./Components/LocationSelect.vue";
+
+// Define props
 
 const props = defineProps({
     profile: Object,
     departments: Array,
     positions: Array,
-    user_groups: Array,
-    account_types: Array,
+    properties: Array,
     errors: Object,
     flash: Object,
     can: Array,
@@ -121,6 +139,8 @@ const form = ref({
     username: null,
     email: null,
     position: null,
+    property_id: null,
+    location_id: null,
     is_able_to_login: null,
     department_id: null,
 });
@@ -162,6 +182,20 @@ const emits = defineEmits(["formValues"]);
 
 const emitFormData = () => {
     emits("formValues", form.value);
+};
+
+const locations = () => {
+    return [
+        {
+            id: 1,
+            name: "APZ-Sadang",
+        },
+        {
+            id: 2,
+            name: "AC3-Sadang",
+        },
+        // Add more locations as needed
+    ];
 };
 
 defineExpose({

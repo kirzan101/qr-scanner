@@ -10,6 +10,7 @@
                 :profile="item"
                 :departments="departments"
                 :positions="positions"
+                :properties="properties"
                 :errors="props.errors"
                 :flash="props.flash"
                 :can="props.can"
@@ -33,10 +34,9 @@ import EditProfile from "../Actions/EditProfile.vue";
 
 // Define props
 const props = defineProps({
-    user_groups: Array,
-    account_types: Array,
     departments: Array,
     positions: Array,
+    properties: Array,
     errors: Object,
     flash: Object,
     can: Array,

@@ -13,7 +13,8 @@ class Location extends Model
     protected $fillable = [
         'name',
         'code',
-        'description'
+        'description',
+        'property_id'
     ];
 
     /**
@@ -36,6 +37,12 @@ class Location extends Model
             '%s - %s',
             $this->code,
             $this->name
+
         ));
+    }
+
+    public function property(): BelongsTo
+    {
+        return $this->belongsTo(Property::class, 'property_id');
     }
 }

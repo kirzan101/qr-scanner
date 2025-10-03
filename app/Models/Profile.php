@@ -16,7 +16,8 @@ class Profile extends Model
         'unique_identifier', // e.g., student number or employee ID
         'position', // e.g., job title or OJT
         'department_id',
-        'property_id'
+        'property_id',
+        'location_id'
     ];
 
     /**
@@ -42,6 +43,15 @@ class Profile extends Model
     {
         return $this->belongsTo(Department::class, 'department_id');
     }
+
+    /**
+     * Get the location that the profile belongs to.
+     */
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(Location::class, 'location_id');
+    }
+
 
     public function profileMealSchedules(): HasOne
     {
