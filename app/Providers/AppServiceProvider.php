@@ -11,6 +11,8 @@ use App\Interfaces\Fetches\ScanProfileFetchInterface;
 use App\Interfaces\ProfileInterface;
 use App\Interfaces\ProfileMealScheduleInterface;
 use App\Interfaces\PropertyInterface;
+use App\Interfaces\LocationInterface;
+use App\Interfaces\Fetches\LocationFetchInterface;
 use App\Interfaces\ScanHistoryInterface;
 use App\Interfaces\ScanProcessInterface;
 use App\Interfaces\UserInterface;
@@ -18,6 +20,8 @@ use App\Services\AccountService;
 use App\Services\DepartmentService;
 use App\Services\Fetches\DepartmentFetchService;
 use App\Services\Fetches\PropertyFetchService;
+use App\Services\Fetches\LocationFetchService;
+use App\Services\LocationService;
 use App\Services\Fetches\ScanHistoryFetchService;
 use App\Services\Fetches\ScanProfileFetchService;
 use App\Services\ProfileMealScheduleService;
@@ -48,6 +52,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(DepartmentFetchInterface::class, DepartmentFetchService::class);
         $this->app->bind(DepartmentInterface::class, DepartmentService::class);
 
+        // location
+         $this->app->bind(LocationInterface::class, LocationService::class);
+         $this->app->bind(LocationFetchInterface::class, LocationFetchService::class);
 
         // scan history
         $this->app->bind(ScanHistoryInterface::class, ScanHistoryService::class);
