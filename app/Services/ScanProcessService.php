@@ -44,8 +44,9 @@ class ScanProcessService implements ScanProcessInterface
                     ];
 
                     $scanResult = $this->scanHistory->storeScanHistory($scanData);
+
                     $this->ensureSuccess($scanResult, 'Failed to scan.');
-                    return $this->returnModel(201, Helper::SUCCESS, 'Successfully scanned!');
+                    return $this->returnModel(201, Helper::SUCCESS, 'Successfully scanned!', $profile, $profile->id);
                 }
 
                 return $this->returnModel(200, Helper::SUCCESS, 'Profile not found');

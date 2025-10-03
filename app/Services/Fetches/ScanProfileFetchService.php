@@ -71,10 +71,14 @@ class ScanProfileFetchService implements ScanProfileFetchInterface
     /**
      * Display the specified scan history.
      */
-    public function show(int $scanProfileId): array
+    public function showByUniqueIdentifier(int $uniqueIdentifier): array
     {
-        $scanProfile = Profile::find($scanProfileId);
+        $scanProfile = Profile::query()->where('unique_identifier', $uniqueIdentifier)->first();
 
-        return $this->returnModel(200, Helper::SUCCESS, 'Scan history retrieved successfully!', $scanProfile);
+        if ($scanProfile) {
+            return $this->returnModel(200, Helper::SUCCESS, 'Scan history retrieved successfully!', $scanProfile);
+        }
+
+        return $this->returnModel(200, Helper::SUCCESS, 'Profile not found');
     }
 }

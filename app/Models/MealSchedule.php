@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MealSchedule extends Model
@@ -42,5 +43,10 @@ class MealSchedule extends Model
     public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(Profile::class, 'updated_by');
+    }
+
+    public function profileMealSchedules(): HasOne
+    {
+        return $this->hasOne(ProfileMealSchedule::class);
     }
 }

@@ -5,11 +5,15 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ScanProfileResource;
 use App\Interfaces\Fetches\ScanProfileFetchInterface;
+use App\Interfaces\ScanProcessInterface;
 use Illuminate\Http\Request;
 
 class ScanProfileApiController extends Controller
 {
-    public function __construct(private ScanProfileFetchInterface $scanProfileFetch) {}
+    public function __construct(
+        private ScanProfileFetchInterface $scanProfileFetch,
+        private ScanProcessInterface $scanProcess
+    ) {}
 
     /**
      * Display a listing of the resource.
@@ -39,6 +43,30 @@ class ScanProfileApiController extends Controller
             'search' => $request->input('search'),
             'sort_by' => $request->input('sort_by'),
             'sort_direction' => $request->input('sort'),
+            'code' => $code,
+            'status' => $status,
+            'message' => $message
+        ], $code);
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function storeUniqueIdentifiers(string $request)
+    {
+        $data = [
+            'unique_identifier' => $request
+        ];
+
+        $result = $this->scanProcess->processScan($data);
+
+        $data = $result['data'] ?? null;
+        $code = $result['code'];
+        $status = $result['status'];
+        $message = $result['message'];
+
+        return response()->json([
+            'data' => $data,
             'code' => $code,
             'status' => $status,
             'message' => $message

@@ -12,5 +12,5 @@ interface ScanProfileFetchInterface
     /**
      * Display the specified scan history.
      */
-    public function show(int $scanProfileId): array;
+    public function showByUniqueIdentifier(int $uniqueIdentifier): array;
 }

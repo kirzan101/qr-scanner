@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Profile extends Model
 {
@@ -41,6 +42,12 @@ class Profile extends Model
     {
         return $this->belongsTo(Department::class, 'department_id');
     }
+
+    public function profileMealSchedules(): HasOne
+    {
+        return $this->hasOne(ProfileMealSchedule::class);
+    }
+
 
     /**
      * Get the full name of the profile, with the middle name shortened to its initials.
