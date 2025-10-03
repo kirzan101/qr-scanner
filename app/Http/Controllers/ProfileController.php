@@ -7,7 +7,6 @@ use App\Http\Requests\ProfileFormRequest;
 use App\Interfaces\Fetches\DepartmentFetchInterface;
 use App\Interfaces\Fetches\LocationFetchInterface;
 use App\Interfaces\Fetches\PropertyFetchInterface;
-// use App\Interfaces\Fetches\LocationFetchInterface;
 use App\Interfaces\ProfileInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
