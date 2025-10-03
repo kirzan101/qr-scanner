@@ -35,6 +35,7 @@
                     :departments="departments"
                     :positions="positions"
                     :properties="properties"
+                    :locations="locations"
                     :errors="errors"
                     :flash="flash"
                     :can="can"
@@ -87,6 +88,7 @@ const props = defineProps({
     departments: Array,
     positions: Array,
     properties: Array,
+    locations: Array,
     errors: Object,
     flash: Object,
     can: Array,

@@ -91,7 +91,7 @@
                     <LocationSelect
                         label="Location"
                         v-model="form.location_id"
-                        :locations="locations()"
+                        :locations="locations"
                         :error-messages="formErrors.location_id"
                     />
                 </v-col>
@@ -125,6 +125,7 @@ const props = defineProps({
     departments: Array,
     positions: Array,
     properties: Array,
+    locations: Array,
     errors: Object,
     flash: Object,
     can: Array,
@@ -182,20 +183,6 @@ const emits = defineEmits(["formValues"]);
 
 const emitFormData = () => {
     emits("formValues", form.value);
-};
-
-const locations = () => {
-    return [
-        {
-            id: 1,
-            name: "APZ-Sadang",
-        },
-        {
-            id: 2,
-            name: "AC3-Sadang",
-        },
-        // Add more locations as needed
-    ];
 };
 
 defineExpose({

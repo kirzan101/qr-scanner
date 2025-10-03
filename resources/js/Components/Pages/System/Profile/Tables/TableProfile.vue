@@ -11,6 +11,7 @@
                 :departments="departments"
                 :positions="positions"
                 :properties="properties"
+                :locations="locations"
                 :errors="props.errors"
                 :flash="props.flash"
                 :can="props.can"
@@ -37,6 +38,7 @@ const props = defineProps({
     departments: Array,
     positions: Array,
     properties: Array,
+    locations: Array,
     errors: Object,
     flash: Object,
     can: Array,

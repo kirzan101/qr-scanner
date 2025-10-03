@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\Helper;
 use App\Http\Requests\ProfileFormRequest;
 use App\Interfaces\Fetches\DepartmentFetchInterface;
+use App\Interfaces\Fetches\LocationFetchInterface;
 use App\Interfaces\Fetches\PropertyFetchInterface;
 // use App\Interfaces\Fetches\LocationFetchInterface;
 use App\Interfaces\ProfileInterface;
@@ -18,7 +19,7 @@ class ProfileController extends Controller
         private ProfileInterface $profile,
         private DepartmentFetchInterface $departmentFetch,
         private PropertyFetchInterface $propertyFetch,
-        // private LocationFetchInterface $locationFetch
+        private LocationFetchInterface $locationFetch
     ) {}
 
 
@@ -38,15 +39,16 @@ class ProfileController extends Controller
             return $this->propertyFetch->index();
         });
 
-        // $locations = Cache::remember('profile_locations', 60, function () {
-        //     return $this->locationFetch->index();
-        // });
+        $locations = Cache::remember('profile_locations', 60, function () {
+            return $this->locationFetch->index();
+        });
 
 
         return Inertia::render('System/Profiles', [
             'can' => [],
             'departments' => $departments['data'],
             'properties' => $properties['data'],
+            'locations' => $locations['data'],
             'positions' => Helper::PROFILE_POSITIONS,
         ]);
     }
