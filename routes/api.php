@@ -15,7 +15,6 @@ Route::get('/user', function (Request $request) {
 
 // //profile api
 Route::get('/profiles', [ScanProfileApiController::class, 'index']);
+Route::post('/profiles/{unique_identifier}', [ScanProfileApiController::class, 'storeUniqueIdentifiers']);
 Route::get('/departments', [DepartmentApiController::class, 'index']);
 Route::get('/properties', [PropertyApiController::class, 'index']);
-
-

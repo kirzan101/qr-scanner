@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('profiles', function (Blueprint $table) {
-            $table->foreignId('property_id')->after('position')->constrained()->onDelete('restrict');
+        Schema::create('locations', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('code');
+            $table->text('description')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('profiles', function (Blueprint $table) {
-            $table->dropForeignId('property_id');
-        });
+        Schema::dropIfExists('locations');
     }
 };
