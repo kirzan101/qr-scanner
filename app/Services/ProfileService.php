@@ -37,6 +37,7 @@ class ProfileService implements ProfileInterface
                     ]);
                 }
 
+
                 $profile = Profile::create([
                     'first_name' => $data['first_name'] ?? null,
                     'middle_name' => $data['middle_name'] ?? null,
@@ -45,12 +46,14 @@ class ProfileService implements ProfileInterface
                     'position' => $data['position'] ?? null,
                     'property_id' => $data['property_id'] ?? 1,
                     'department_id' => $data['department_id'] ?? 1,
+                    'location_id' => $data['location_id'] ?? 1,
                     'user_id' => $userResult['last_id'] ?? null,
                 ]);
 
                 return $this->returnModel(201, 'success', 'Profile created successfully!', $profile, $profile->id);
             });
         } catch (\Throwable $th) {
+            dd($th->getMessage());
             $code = $this->httpCode($th);
             return $this->returnModel($code, 'error', $th->getMessage());
         }
@@ -80,6 +83,7 @@ class ProfileService implements ProfileInterface
                     'unique_identifier' => $data['unique_identifier'] ?? $profile->unique_identifier,
                     'property_id' => $data['property_id'] ?? $profile->property_id,
                     'department_id' => $data['department_id'] ?? $profile->department_id,
+                    'location_id' => $data['location_id'] ?? $profile->location_id,
                     'position' => $data['position'] ?? $profile->position,
                 ]);
 

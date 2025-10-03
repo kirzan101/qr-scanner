@@ -14,6 +14,8 @@
                 <FormProfile
                     :departments="departments"
                     :positions="positions"
+                    :properties="properties"
+                    :locations="locations"
                     :errors="errors"
                     :flash="flash"
                     :can="can"
@@ -62,6 +64,8 @@ defineProps({
     },
     positions: Array,
     departments: Array,
+    properties: Array,
+    locations: Array,
     errors: Object,
     flash: Object,
     can: Array,

@@ -3,15 +3,10 @@
         <v-row>
             <!-- Camera and Recent Scanned -->
             <v-col cols="12" md="6" class="pr-md-2">
-                
                 <CardQrScanner />
 
                 <!-- Recent Scanned - Show on all screen sizes -->
-                <v-card
-                    class="mt-2"
-                    elevation="2"
-                    rounded="lg"
-                >
+                <v-card class="mt-2" elevation="2" rounded="lg">
                     <v-card-text class="pa-2">
                         <v-card-title class="text-h6 font-weight-bold pa-2">
                             Recent Scanned:
@@ -69,6 +64,7 @@ import CardQrScanner from "./Components/CardQrScanner.vue";
 import CardLastScanned from "./Components/CardLastScanned.vue";
 
 import ReadQrScanner from "./Components/ReadQrCode.vue";
+import ReadQrCodeStream from "./Components/ReadQrCodeStream.vue";
 
 const form = ref({
     unique_identifier: null,

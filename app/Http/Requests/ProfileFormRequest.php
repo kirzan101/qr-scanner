@@ -56,9 +56,10 @@ class ProfileFormRequest extends FormRequest
             'middle_name' => 'nullable|string|max:50',
             'last_name' => 'required|string|max:50',
             'unique_identifier' => 'required|string|max:50|unique:profiles,unique_identifier',
-            // 'property_id' => 'required|integer|exists:properties,id',
+            'property_id' => 'required|integer|exists:properties,id',
+            'location_id' => 'required|integer|exists:locations,id',
             'department_id' => 'required|integer|exists:departments,id',
-            'position' => 'nullable|string|max:50',
+            'position' => 'required|string|max:50',
 
         ];
     }

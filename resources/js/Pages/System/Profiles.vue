@@ -5,6 +5,8 @@
             <ProfileContent
                 :departments="departments"
                 :positions="positions"
+                :properties="properties"
+                :locations="locations"
                 :flash="flash"
                 :errors="errors"
                 :can="can"
@@ -23,6 +25,8 @@ import ProfileContent from "../../Components/Pages/System/Profile/ProfileContent
 defineProps({
     departments: Array,
     positions: Array,
+    properties: Array,
+    locations: Array,
     errors: Object,
     flash: Object,
     can: Array,

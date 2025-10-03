@@ -26,7 +26,8 @@ class LocationService implements LocationInterface
                 $location = Location::create([
                     'name' => $data['name'],
                     'code' => $data['code'],
-                    'description' => $data['description']
+                    'description' => $data['description'],
+                    'property_id' => $data['property_id'] ?? 1
                 ]);
 
                 return $this->returnModel(201, Helper::SUCCESS, 'location created successfully!', $location, $location->id);
@@ -49,7 +50,8 @@ class LocationService implements LocationInterface
                 $location = tap($location)->update([
                     'name' => $data['name'] ?? $location->name,
                     'code' => $data['code'] ?? $location->code,
-                    'description' => $data['description'] ?? $location->description
+                    'description' => $data['description'] ?? $location->description,
+                    'property_id' => $data['property_id'] ?? $location->property_id
                 ]);
 
                 return $this->returnModel(200, Helper::SUCCESS, 'Location updated successfully!', $location, $location->id);
