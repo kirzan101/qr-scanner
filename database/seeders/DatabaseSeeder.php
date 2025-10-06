@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
             PropertySeeder::class,
             LocationSeeder::class,
-            // ProfileMealSchedulePerPropertySeeder::class,
+            ProfileMealSchedulePerPropertySeeder::class,
         ]);
     }
 }
