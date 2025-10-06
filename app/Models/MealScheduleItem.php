@@ -12,7 +12,8 @@ class MealScheduleItem extends Model
 
     protected $fillable = [
         'meal_schedule_id',
-        'time',
+        'time_start',
+        'time_end',
         'meal_type',
     ];
 

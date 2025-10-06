@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('meal_schedule_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('meal_schedule_id')->constrained()->onDelete('restrict');
-            $table->time('time');
+            $table->time('time_start')->nullable();
+            $table->time('time_end')->nullable();
             $table->string('meal_type');
             $table->timestamps();
         });
