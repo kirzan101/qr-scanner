@@ -2,38 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\LocationInterface;
-use App\Interfaces\PropertyInterface;
+use App\Interfaces\Fetches\ScanHistoryFetchInterface;
+use App\Interfaces\ScanHistoryInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class LocationController extends Controller
+class ScanHistoryController extends Controller
 {
     public function __construct(
-        private LocationInterface $location
+        private ScanHistoryInterface $scanHistory,
+        private ScanHistoryFetchInterface $scanHistoryFetch
     ) {}
 
     /**
-     * Display locations
+     * Display scan histories
      *
      * @return void
      */
     public function index()
     {
-        return Inertia::render('System/Locations', [
+        return Inertia::render('System/ScanHistories', [
             'can' => []
         ]);
     }
 
     /**
-     * Store Location
+     * Store Scan History
      *
      * @param Request $request
      * @return void
      */
     public function store(Request $request)
     {
-        $result = $this->location->storeLocation($request->all());
+        $result = $this->scanHistory->storeScanHistory($request->all());
 
         $status = $result['status'] ?? 'error';
         $message = $result['message'] ?? 'An error occurred';
@@ -42,7 +43,7 @@ class LocationController extends Controller
     }
 
     /**
-     * Update location
+     * Update scan history
      *
      * @param Request $request
      * @param [type] $id
@@ -50,25 +51,23 @@ class LocationController extends Controller
      */
     public function update(Request $request, $id)
     {
-
-        $result = $this->location->updateLocation($id, $request->all());
+        $result = $this->scanHistory->updateScanHistory($id, $request->all());
 
         $status = $result['status'] ?? 'error';
-
         $message = $result['message'] ?? 'An error occurred';
 
         return redirect()->back()->with($status, $message);
     }
 
     /**
-     * Delete location
+     * Delete scan history
      *
      * @param [type] $id
      * @return void
      */
     public function destroy($id)
     {
-        $result = $this->location->deleteLocation($id);
+        $result = $this->scanHistory->deleteScanHistory($id);
 
         $status = $result['status'] ?? 'error';
         $message = $result['message'] ?? 'An error occurred';

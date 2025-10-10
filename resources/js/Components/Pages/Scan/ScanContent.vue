@@ -2,51 +2,100 @@
     <v-container fluid class="pa-4 py-2 px-0">
         <v-row>
             <!-- Camera and Recent Scanned -->
-            <v-col cols="12" md="6" class="pr-md-2">
+            <v-col cols="12" md="6" class="pr-md-2 d-flex flex-column">
+                
                 <CardQrScanner />
 
                 <!-- Recent Scanned - Show on all screen sizes -->
-                <v-card class="mt-2" elevation="2" rounded="lg">
-                    <v-card-text class="pa-2">
+                <v-card
+                    class="mt-2 flex-grow-1 d-flex flex-column"
+                    elevation="2"
+                    rounded="lg"
+                >
+                    <v-card-text class="pa-2 flex-grow-1 d-flex flex-column">
                         <v-card-title class="text-h6 font-weight-bold pa-2">
                             Recent Scanned:
                         </v-card-title>
-                        <CardLastScanned
-                            v-for="(item, index) in recentItems"
-                            :key="`recent-${index}`"
-                            :item="item"
-                            :index="index"
-                            @handleQRClick="handleQRClick"
-                        />
+                        <v-container class="flex-grow-1 pa-0">
+                            <!-- Loading state -->
+                            <v-progress-circular
+                                v-if="loading"
+                                indeterminate
+                                color="primary"
+                                class="mx-auto d-block mt-4"
+                            />
+                            
+                            <!-- Empty state -->
+                            <v-alert
+                                v-else-if="recentItems.length === 0"
+                                type="info"
+                                variant="tonal"
+                                class="mt-2"
+                            >
+                                No recent scans found
+                            </v-alert>
+                            
+                            <!-- Scan items -->
+                            <CardLastScanned
+                                v-else
+                                v-for="(item, index) in recentItems"
+                                :key="`recent-${index}`"
+                                :item="item"
+                                :index="index"
+                                @handleQRClick="handleQRClick"
+                            />
+                        </v-container>
                     </v-card-text>
                 </v-card>
             </v-col>
 
             <!-- Scan History -->
             <v-col cols="12" md="6" class="pl-md-2">
-                <v-card class="mt-4 mt-md-0" elevation="2" rounded="lg">
+                <v-card class="mt-4 mt-md-0 d-flex flex-column" elevation="2" rounded="lg" style="height: 100%;">
                     <v-card-title class="text-h6 font-weight-bold pa-2 ml-2">
                         Scan History:
                     </v-card-title>
-                    <v-card-text class="pa-2" style="min-height: 400px">
-                        <CardLastScanned
-                            v-for="(item, index) in paginatedItems"
-                            :key="`history-${index}`"
-                            :item="item"
-                            :index="index"
-                            @handleQRClick="handleQRClick"
-                        />
+                    <v-card-text class="pa-2 flex-grow-1 d-flex flex-column" style="min-height: 400px">
+                        <v-container class="flex-grow-1 pa-0">
+                            <!-- Loading state -->
+                            <v-progress-circular
+                                v-if="loading"
+                                indeterminate
+                                color="primary"
+                                class="mx-auto d-block mt-4"
+                            />
+                            
+                            <!-- Empty state -->
+                            <v-alert
+                                v-else-if="paginatedItems.length === 0"
+                                type="info"
+                                variant="tonal"
+                                class="mt-2"
+                            >
+                                No scan history found
+                            </v-alert>
+                            
+                            <!-- Scan items -->
+                            <CardLastScanned
+                                v-else
+                                v-for="(item, index) in paginatedItems"
+                                :key="`history-${index}`"
+                                :item="item"
+                                :index="index"
+                                @handleQRClick="handleQRClick"
+                            />
+                        </v-container>
                     </v-card-text>
 
                     <!-- Pagination -->
                     <v-card-actions
-                        class="justify-center"
-                        v-if="totalPages > 1"
+                        class="justify-center mt-auto"
+                        v-if="hasMultiplePages"
                     >
                         <v-pagination
                             v-model="currentPage"
                             :length="totalPages"
-                            :total-visible="$vuetify.display.smAndDown ? 3 : 5"
+                            :total-visible="5"
                             color="primary"
                             size="small"
                         />
@@ -59,12 +108,10 @@
 
 <script setup>
 import { router } from "@inertiajs/vue3";
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
+import axiosInstance from "@/Utilities/axios";
 import CardQrScanner from "./Components/CardQrScanner.vue";
 import CardLastScanned from "./Components/CardLastScanned.vue";
-
-import ReadQrScanner from "./Components/ReadQrCode.vue";
-import ReadQrCodeStream from "./Components/ReadQrCodeStream.vue";
 
 const form = ref({
     unique_identifier: null,
@@ -91,7 +138,8 @@ watch(
 const handleFormSubmission = async () => {
     router.post("/scans", form.value, {
         onSuccess: ({ props }) => {
-            // sessionStorage.setItem("token", props.token);
+            // Reload scan history after successful scan
+            fetchScanHistory();
         },
         onError: () => {
             //
@@ -101,74 +149,90 @@ const handleFormSubmission = async () => {
     });
 };
 
-// Single pagination system
+// Laravel-style pagination
 const currentPage = ref(1);
-const itemsPerPage = computed(() => {
-    // More items per page on larger screens
-    return window.innerWidth >= 960 ? 6 : 5;
+const perPage = computed(() => {
+    // Maximize items per page based on screen size (Laravel paginate style)
+    const width = window.innerWidth;
+    if (width >= 1920) return 12;      // 4K/Large desktop
+    if (width >= 1440) return 10;      // Desktop
+    if (width >= 1200) return 8;       // Large tablet/small desktop
+    if (width >= 768) return 7;        // Tablet
+    return 6;                           // Mobile
 });
 
-const scannedItems = ref([
-    {
-        name: "Castillo, Sherry",
-        mealType: "Lunch",
-        time: "2024-09-24 11:00:00 am",
-    },
-    {
-        name: "Test, Allan",
-        mealType: "breakfast",
-        time: "2024-07-16 9:29:22 am",
-    },
-    {
-        name: "Johnson, Mike",
-        mealType: "abc-def-789",
-        time: "2024-09-23 2:15:30 pm",
-    },
-    {
-        name: "Smith, Sarah",
-        mealType: "xyz-123-456",
-        time: "2024-09-22 10:45:15 am",
-    },
-    {
-        name: "Brown, David",
-        mealType: "qwe-rty-789",
-        time: "2024-09-21 4:30:22 pm",
-    },
-    {
-        name: "Wilson, Emma",
-        mealType: "poi-lkj-123",
-        time: "2024-09-20 8:20:10 am",
-    },
-    {
-        name: "Davis, John",
-        mealType: "mnb-vcx-456",
-        time: "2024-09-19 1:10:45 pm",
-    },
-]);
+// Scan history data from API
+const scannedItems = ref([]);
+const loading = ref(false);
 
-// Recent items - always shows the 2 most recent scans
-const recentItems = computed(() => {
-    return scannedItems.value.slice(0, 5);
+// Fetch scan history from API
+const fetchScanHistory = async () => {
+    try {
+        loading.value = true;
+        const response = await axiosInstance.get('/scan-histories', {
+            params: {
+                per_page: 50, // Get recent 50 items
+                sort_by: 'scanned_at',
+                sort_direction: 'desc'
+            }
+        });
+        
+        // Transform API data to match CardLastScanned format
+        if (response.data && response.data.data) {
+            scannedItems.value = response.data.data.map(item => {
+                const profile = item.profile || {};
+                const firstName = profile.first_name || '';
+                const middleName = profile.middle_name || '';
+                const lastName = profile.last_name || '';
+                
+                return {
+                    name: `${lastName}, ${firstName} ${middleName}`.trim(),
+                    mealType: item.meal_schedule || 'N/A',
+                    time: formatDateTime(item.scanned_at),
+                    raw: item // Keep raw data for reference
+                };
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching scan history:', error);
+    } finally {
+        loading.value = false;
+    }
+};
+
+// Format date time to Philippine Time
+const formatDateTime = (dateTime) => {
+    if (!dateTime) return '';
+    const date = new Date(dateTime);
+    return date.toLocaleString('en-PH', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Manila'
+    });
+};
+
+// Fetch data on component mount
+onMounted(() => {
+    fetchScanHistory();
 });
 
-// Single pagination system
+// Laravel-style computed properties
+const recentItems = computed(() => scannedItems.value.slice(0, 5));
+
 const paginatedItems = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage.value;
-    const end = start + itemsPerPage.value;
-    return scannedItems.value.slice(start, end);
+    const start = (currentPage.value - 1) * perPage.value;
+    return scannedItems.value.slice(start, start + perPage.value);
 });
 
-const totalPages = computed(() => {
-    return Math.ceil(scannedItems.value.length / itemsPerPage.value);
-});
+const totalPages = computed(() => Math.ceil(scannedItems.value.length / perPage.value));
+const hasMultiplePages = computed(() => totalPages.value > 1);
 
-// Function to add new scanned item (this will automatically update recent items)
-const addNewScan = (newItem) => {
-    // Add to the beginning of the array (most recent first)
-    scannedItems.value.unshift(newItem);
-};
-
-const handleQRClick = (item, index) => {
-    console.log("QR code clicked!", { item, index });
-};
+// Laravel-style methods
+const addNewScan = (item) => scannedItems.value.unshift(item);
+const handleQRClick = (item, index) => console.log('QR clicked:', { item, index });
 </script>
