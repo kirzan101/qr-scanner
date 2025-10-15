@@ -34,22 +34,48 @@ class ScanProcessService implements ScanProcessInterface
 
                 $profile = Profile::where('unique_identifier', $data['unique_identifier'])->first();
 
-
-                if ($profile) {
-                    $scanData = [
-                        'profile_id' => $profile->id,
-                        'scanned_at' => Carbon::now(),
-                        'property_id' => $profile->property_id,
-                        'meal_schedule' => 'Lunch' // e.g., breakfast, lunch, dinner
-                    ];
-
-                    $scanResult = $this->scanHistory->storeScanHistory($scanData);
-
-                    $this->ensureSuccess($scanResult, 'Failed to scan.');
-                    return $this->returnModel(201, Helper::SUCCESS, 'Successfully scanned!', $profile, $profile->id);
+                if (!$profile) {
+                    return $this->returnModel(404, Helper::ERROR, 'Profile not found');
                 }
 
-                return $this->returnModel(200, Helper::SUCCESS, 'Profile not found');
+                // Check if the same profile was scanned within the last hour
+                $oneHourAgo = Carbon::now()->subHour();
+                $recentScan = DB::table('scan_histories')
+                    ->where('profile_id', $profile->id)
+                    ->where('scanned_at', '>=', $oneHourAgo)
+                    ->orderBy('scanned_at', 'desc')
+                    ->first();
+
+                if ($recentScan) {
+                    $timeDiff = Carbon::parse($recentScan->scanned_at)->diffForHumans(Carbon::now(), true);
+                    $lastScanTime = Carbon::parse($recentScan->scanned_at)->format('h:i A');
+                    
+                    return $this->returnModel(
+                        409, 
+                        Helper::ERROR, 
+                        "Already scanned! This QR code was scanned {$timeDiff} ago at {$lastScanTime}. Please wait at least 1 hour between scans."
+                    );
+                }
+
+                // If no recent scan found, proceed with scanning
+                $scanData = [
+                    'profile_id' => $profile->id,
+                    'scanned_at' => Carbon::now(),
+                    'property_id' => $profile->property_id,
+                    'meal_schedule' => 'Lunch' // e.g., breakfast, lunch, dinner
+                ];
+
+                $scanResult = $this->scanHistory->storeScanHistory($scanData);
+
+                $this->ensureSuccess($scanResult, 'Failed to scan.');
+                
+                return $this->returnModel(
+                    201, 
+                    Helper::SUCCESS, 
+                    "Successfully scanned! Welcome, {$profile->first_name} {$profile->last_name}.", 
+                    $profile, 
+                    $profile->id
+                );
             });
         } catch (\Throwable $th) {
             $code = $this->httpCode($th);
