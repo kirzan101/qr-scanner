@@ -25,6 +25,7 @@ class User extends Authenticatable
         'isAdmin',
         'last_login_at',
         'is_able_to_login',
+        'status',
     ];
 
     /**

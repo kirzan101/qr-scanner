@@ -1,20 +1,20 @@
 <template>
     <nav-side-bar :errors="errors" :flash="flash" :can="can" />
-        <img
-            src="images/logos/a_sign_in_side_blue.png"
-            alt="Sign In Right"
-            style="
-                position: absolute;
-                margin-right: 0px;
-                top: 0px;
-                bottom: 0px;
-                right: 0px;
-                height: 100%;
-                max-width: 100%;
-                object-fit: cover;
-                opacity: 0.15; /* 50% transparency */
-            "
-        />
+    <img
+        src="images/logos/a_sign_in_side_blue.png"
+        alt="Sign In Right"
+        style="
+            position: absolute;
+            margin-right: 0px;
+            top: 0px;
+            bottom: 0px;
+            right: 0px;
+            height: 100%;
+            max-width: 100%;
+            object-fit: cover;
+            opacity: 0.15; /* 50% transparency */
+        "
+    />
     <v-main>
         <slot />
     </v-main>

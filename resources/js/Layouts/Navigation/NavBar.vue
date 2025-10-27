@@ -10,9 +10,14 @@
                 style="height: 40px"
             />
         </v-app-bar-title>
-        <template v-slot:append v-if="false">
+        <template v-slot:append v-if="true">
             <switch-theme />
-            <menu-settings :errors="errors" :flash="flash" :can="can" />
+            <menu-settings
+                :errors="errors"
+                :flash="flash"
+                :can="can"
+                :showChangePassword="false"
+            />
         </template>
     </v-app-bar>
 </template>

@@ -19,7 +19,11 @@
                 <c-list-item-title>{{ item.title }}</c-list-item-title>
             </c-list-item> -->
 
-            <v-list-item @click="handleChangePassword" class="settings-hover">
+            <v-list-item
+                v-if="showChangePassword"
+                @click="handleChangePassword"
+                class="settings-hover"
+            >
                 <template v-slot:prepend>
                     <v-icon
                         size="small"
@@ -57,6 +61,10 @@ import { useTheme } from "vuetify";
 const theme = useTheme();
 
 defineProps({
+    showChangePassword: {
+        type: Boolean,
+        default: true,
+    },
     errors: Object,
     flash: Object,
     can: Array,

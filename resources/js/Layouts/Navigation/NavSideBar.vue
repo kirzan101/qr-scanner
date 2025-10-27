@@ -210,19 +210,19 @@ const systemLinks = [
     },
     {
         module: "departments",
-        icon: "mdi-office-building"
+        icon: "mdi-office-building",
     },
     {
         module: "properties",
-        icon: "mdi-office-building"
+        icon: "mdi-office-building",
     },
     {
         module: "locations",
-        icon: "mdi-office-building"
+        icon: "mdi-office-building",
     },
     {
         module: "scan_histories",
-        icon: "mdi-history"
+        icon: "mdi-history",
     },
 ];
 

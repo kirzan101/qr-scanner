@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Interfaces\AccountInterface;
+use App\Interfaces\AuthInterface;
+use App\Interfaces\CurrentUserInterface;
 use App\Interfaces\DepartmentInterface;
 use App\Interfaces\Fetches\DepartmentFetchInterface;
 use App\Interfaces\Fetches\PropertyFetchInterface;
@@ -17,6 +19,8 @@ use App\Interfaces\ScanHistoryInterface;
 use App\Interfaces\ScanProcessInterface;
 use App\Interfaces\UserInterface;
 use App\Services\AccountService;
+use App\Services\AuthService;
+use App\Services\CurrentUserService;
 use App\Services\DepartmentService;
 use App\Services\Fetches\DepartmentFetchService;
 use App\Services\Fetches\PropertyFetchService;
@@ -31,6 +35,7 @@ use App\Services\ScanHistoryService;
 use App\Services\ScanProcessService;
 use App\Services\UserService;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -53,8 +58,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(DepartmentInterface::class, DepartmentService::class);
 
         // location
-         $this->app->bind(LocationInterface::class, LocationService::class);
-         $this->app->bind(LocationFetchInterface::class, LocationFetchService::class);
+        $this->app->bind(LocationInterface::class, LocationService::class);
+        $this->app->bind(LocationFetchInterface::class, LocationFetchService::class);
 
         // scan history
         $this->app->bind(ScanHistoryInterface::class, ScanHistoryService::class);
@@ -67,6 +72,9 @@ class AppServiceProvider extends ServiceProvider
 
         //profile meal schedule
         $this->app->bind(ProfileMealScheduleInterface::class, ProfileMealScheduleService::class);
+
+        $this->app->bind(AuthInterface::class, AuthService::class);
+        $this->app->bind(CurrentUserInterface::class, CurrentUserService::class);
     }
 
     /**
