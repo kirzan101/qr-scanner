@@ -35,7 +35,7 @@ class ScanProcessService implements ScanProcessInterface
                 $profile = Profile::where('unique_identifier', $data['unique_identifier'])->first();
 
                 if (!$profile) {
-                    return $this->returnModel(404, Helper::ERROR, 'Profile not found');
+                    return $this->returnModel(201, Helper::SUCCESS, 'Unidentified qr code');
                 }
 
                 // Check if the same profile was scanned within the last hour
@@ -49,10 +49,10 @@ class ScanProcessService implements ScanProcessInterface
                 if ($recentScan) {
                     $timeDiff = Carbon::parse($recentScan->scanned_at)->diffForHumans(Carbon::now(), true);
                     $lastScanTime = Carbon::parse($recentScan->scanned_at)->format('h:i A');
-                    
+
                     return $this->returnModel(
-                        409, 
-                        Helper::ERROR, 
+                        201,
+                        Helper::SUCCESS,
                         "Already scanned! This QR code was scanned {$timeDiff} ago at {$lastScanTime}. Please wait at least 1 hour between scans."
                     );
                 }
@@ -68,12 +68,12 @@ class ScanProcessService implements ScanProcessInterface
                 $scanResult = $this->scanHistory->storeScanHistory($scanData);
 
                 $this->ensureSuccess($scanResult, 'Failed to scan.');
-                
+
                 return $this->returnModel(
-                    201, 
-                    Helper::SUCCESS, 
-                    "Successfully scanned! Welcome, {$profile->first_name} {$profile->last_name}.", 
-                    $profile, 
+                    201,
+                    Helper::SUCCESS,
+                    "Successfully scanned! Welcome, {$profile->first_name} {$profile->last_name}.",
+                    $profile,
                     $profile->id
                 );
             });
