@@ -50,7 +50,7 @@ class ProfileMealSchedulePerPropertySeeder extends Seeder
             $user = User::create([
                 'username' => $profile['username'],
                 'email' => $profile['email'],
-                'password' => bcrypt('password'),
+                'password' => bcrypt($profile['username']),
                 'isAdmin' => false,
                 'is_able_to_login' => true
             ]);
