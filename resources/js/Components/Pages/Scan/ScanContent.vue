@@ -1,95 +1,101 @@
 <template>
     <v-container fluid class="pa-4 py-2 px-0">
+        <!-- Loading Overlay -->
+        <v-overlay :model-value="isProcessing" class="align-center justify-center" persistent>
+            <v-progress-circular color="primary" size="64" indeterminate />
+            <div class="text-center mt-4">
+                <v-card class="pa-4" elevation="4">
+                    <v-card-text>Processing scan...</v-card-text>
+                </v-card>
+            </div>
+        </v-overlay>
+
         <v-row>
             <!-- Camera and Recent Scanned -->
             <v-col cols="12" md="6" class="pr-md-2 d-flex flex-column">
                 
-                <CardQrScanner />
+                <CardQrScanner @scanned="handleScanned" @success="handleScanSuccess" />
 
-                <!-- Recent Scanned - Show on all screen sizes -->
                 <v-card
-                    class="mt-2 flex-grow-1 d-flex flex-column"
+                    class="mt-2"
                     elevation="2"
                     rounded="lg"
                 >
-                    <v-card-text class="pa-2 flex-grow-1 d-flex flex-column">
-                        <v-card-title class="text-h6 font-weight-bold pa-2">
-                            Recent Scanned:
-                        </v-card-title>
-                        <v-container class="flex-grow-1 pa-0">
-                            <!-- Loading state -->
-                            <v-progress-circular
-                                v-if="loading"
-                                indeterminate
-                                color="primary"
-                                class="mx-auto d-block mt-4"
-                            />
-                            
-                            <!-- Empty state -->
-                            <v-alert
-                                v-else-if="recentItems.length === 0"
-                                type="info"
-                                variant="tonal"
-                                class="mt-2"
-                            >
-                                No recent scans found
-                            </v-alert>
-                            
-                            <!-- Scan items -->
+                    <v-card-title class="text-h6 font-weight-bold pa-2">
+                        Recent Scanned:
+                    </v-card-title>
+                    <v-card-text class="pa-2" style="height: 550px; overflow: hidden;">
+                        <!-- Loading state -->
+                        <v-progress-circular
+                            v-if="loading"
+                            indeterminate
+                            color="primary"
+                            class="mx-auto d-block mt-4"
+                        />
+                        
+                        <!-- Empty state -->
+                        <v-alert
+                            v-else-if="recentItems.length === 0"
+                            type="info"
+                            variant="tonal"
+                            class="mt-2"
+                        >
+                            No recent scans found
+                        </v-alert>
+                        
+                        <template v-else>
                             <CardLastScanned
-                                v-else
                                 v-for="(item, index) in recentItems"
                                 :key="`recent-${index}`"
                                 :item="item"
                                 :index="index"
                                 @handleQRClick="handleQRClick"
                             />
-                        </v-container>
+                        </template>
                     </v-card-text>
                 </v-card>
             </v-col>
 
-            <!-- Scan History -->
-            <v-col cols="12" md="6" class="pl-md-2">
-                <v-card class="mt-4 mt-md-0 d-flex flex-column" elevation="2" rounded="lg" style="height: 100%;">
+            <!-- Scan History with Pagination - Matches left side total height -->
+            <v-col cols="12" md="6" class="pl-md-2 d-flex flex-column">
+                <v-card class="d-flex flex-column" elevation="2" rounded="lg" style="flex: 1;">
                     <v-card-title class="text-h6 font-weight-bold pa-2 ml-2">
                         Scan History:
                     </v-card-title>
-                    <v-card-text class="pa-2 flex-grow-1 d-flex flex-column" style="min-height: 400px">
-                        <v-container class="flex-grow-1 pa-0">
-                            <!-- Loading state -->
-                            <v-progress-circular
-                                v-if="loading"
-                                indeterminate
-                                color="primary"
-                                class="mx-auto d-block mt-4"
-                            />
-                            
-                            <!-- Empty state -->
-                            <v-alert
-                                v-else-if="paginatedItems.length === 0"
-                                type="info"
-                                variant="tonal"
-                                class="mt-2"
-                            >
-                                No scan history found
-                            </v-alert>
-                            
-                            <!-- Scan items -->
+                    <v-card-text class="pa-2 flex-grow-1 d-flex flex-column" style="overflow: hidden;">
+                        <!-- Loading state -->
+                        <v-progress-circular
+                            v-if="loading"
+                            indeterminate
+                            color="primary"
+                            class="mx-auto d-block mt-4"
+                        />
+                        
+                        <!-- Empty state -->
+                        <v-alert
+                            v-else-if="paginatedItems.length === 0"
+                            type="info"
+                            variant="tonal"
+                            class="mt-2"
+                        >
+                            No scan history found
+                        </v-alert>
+                        
+                        <!-- Scan items - Paginated -->
+                        <div v-else class="flex-grow-1">
                             <CardLastScanned
-                                v-else
                                 v-for="(item, index) in paginatedItems"
                                 :key="`history-${index}`"
                                 :item="item"
                                 :index="index"
                                 @handleQRClick="handleQRClick"
                             />
-                        </v-container>
+                        </div>
                     </v-card-text>
 
-                    <!-- Pagination -->
+                    <!-- Pagination - Always visible for navigation -->
                     <v-card-actions
-                        class="justify-center mt-auto"
+                        class="justify-center pa-2 mt-auto"
                         v-if="hasMultiplePages"
                     >
                         <v-pagination
@@ -117,8 +123,15 @@ const form = ref({
     unique_identifier: null,
 });
 
+const isProcessing = ref(false);
+
 const handleScanned = (result) => {
     form.value.unique_identifier = result;
+};
+
+const handleScanSuccess = () => {
+    // Refresh scan history when scan is successful
+    fetchScanHistory();
 };
 
 watch(
@@ -138,28 +151,24 @@ watch(
 const handleFormSubmission = async () => {
     router.post("/scans", form.value, {
         onSuccess: ({ props }) => {
-            // Reload scan history after successful scan
+            // Automatically reload scan history after successful scan
             fetchScanHistory();
         },
         onError: () => {
             //
         },
-        onBefore: () => {},
-        onFinish: () => {},
+        onBefore: () => {
+            isProcessing.value = true;
+        },
+        onFinish: () => {
+            isProcessing.value = false;
+        },
     });
 };
 
-// Laravel-style pagination
+ 
 const currentPage = ref(1);
-const perPage = computed(() => {
-    // Maximize items per page based on screen size (Laravel paginate style)
-    const width = window.innerWidth;
-    if (width >= 1920) return 12;      // 4K/Large desktop
-    if (width >= 1440) return 10;      // Desktop
-    if (width >= 1200) return 8;       // Large tablet/small desktop
-    if (width >= 768) return 7;        // Tablet
-    return 6;                           // Mobile
-});
+const perPage = ref(8);  
 
 // Scan history data from API
 const scannedItems = ref([]);
@@ -221,7 +230,7 @@ onMounted(() => {
     fetchScanHistory();
 });
 
-// Laravel-style computed properties
+ 
 const recentItems = computed(() => scannedItems.value.slice(0, 5));
 
 const paginatedItems = computed(() => {
@@ -232,7 +241,7 @@ const paginatedItems = computed(() => {
 const totalPages = computed(() => Math.ceil(scannedItems.value.length / perPage.value));
 const hasMultiplePages = computed(() => totalPages.value > 1);
 
-// Laravel-style methods
+ 
 const addNewScan = (item) => scannedItems.value.unshift(item);
 const handleQRClick = (item, index) => console.log('QR clicked:', { item, index });
 </script>
