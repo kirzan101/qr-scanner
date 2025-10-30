@@ -3,39 +3,44 @@
   
   <v-card
     elevation="9"
-    
     rounded="lg"
     variant="outlined"
-    :max-width="$vuetify.display.smAndUp ? 600 : undefined"
-    class="mx-auto pa-3" 
-
+    
+    class="mx-full justify-center pa-3 bg-white "
    >
-     <ReadQrCodeStream
-       v-if="scannerActive"
-       ref="qrStreamRef"
-     />
+     <!-- Fixed height container to prevent card resizing -->
+     <v-container class="camera-container pa-0"  style="height: 100%; overflow: hidden; position: relative; display: flex; flex-direction: column; max-width: 100%;">
+       <!-- Camera content wrapper -->
+       <v-container class="pa-0" fluid style="flex: 1; position: relative; max-width: 100%;">
+         <ReadQrCodeStream
+           v-if="scannerActive"
+           ref="qrStreamRef"
+           style="height: 100%; width: 100%; object-fit: cover;"
+         />
 
-     <!-- Camera Closed - Show Reopen Button -->
-     <v-container v-else class="d-flex flex-column align-center justify-center pa-8" style="min-height: 300px;">
-       <v-icon size="80" color="warning" class="mb-4">mdi-camera-off</v-icon>
-       <v-card-title class="text-h6 mb-2 text-center">Camera Timeout</v-card-title>
-       <v-card-subtitle class="mb-4 text-center">No QR code detected for 20 seconds</v-card-subtitle>
-       <v-btn 
-         color="primary" 
-         size="large"
-         @click="restartScanner"
-         prepend-icon="mdi-camera"
-       >
-         Open Camera Again
-       </v-btn>
+         <!-- Camera Closed - Show Reopen Button -->
+         <v-container v-else class="d-flex flex-column align-center justify-center pa-8" style="height: 100%;">
+           <v-icon size="80" color="warning" class="mb-4">mdi-camera-off</v-icon>
+           <v-card-title class="text-h6 mb-2 text-center">Camera Timeout</v-card-title>
+           <v-card-subtitle class="mb-4 text-center">No QR code detected for 20 seconds</v-card-subtitle>
+           <v-btn 
+             color="primary" 
+             size="large"
+             @click="restartScanner"
+             prepend-icon="mdi-camera"
+           >
+             Open Camera Again
+           </v-btn>
+         </v-container>
+       </v-container>
+
+       <!-- Timer Display (inside fixed container, always at bottom) -->
+       <v-container class="text-center pa-2 ma-0" style="min-height: 20px; display: flex !important; align-items: center; justify-content: center; width: 100%; max-width: none !important;">
+         <v-chip v-if="scannerActive" color="info" variant="outlined" prepend-icon="mdi-timer-outline">
+           Time remaining: {{ remainingTime }}s
+         </v-chip>
+       </v-container>
      </v-container>
-
-    <!-- Timer Display (only when camera is active) -->
-    <v-card-text v-if="scannerActive" class="text-center">
-      <v-chip color="info" variant="outlined" prepend-icon="mdi-timer-outline">
-        Time remaining: {{ remainingTime }}s
-      </v-chip>
-    </v-card-text>
 
     <!-- Status feedback at the bottom of the card -->
     <v-card-actions v-if="statusMessage">
@@ -53,7 +58,6 @@
 
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
-import ReadQrCode from './ReadQrCode.vue';
 import ReadQrCodeStream from './ReadQrCodeStream.vue';
 import SnackBarTop from "@/Components/Utilities/SnackBarTop.vue";
  
@@ -204,13 +208,19 @@ watch(() => qrStreamRef.value, (newVal) => {
       startCameraTimer();
     });
   }
-}, { immediate: true });
+});
 
 // Watch for items changes from ReadQrCodeStream to handle errors
 watch(
   () => qrStreamRef.value?.items,
   (value) => {
     if (!value) return;
+    
+    console.log("QR Scan detected, restarting timer...", value);
+    
+    // Restart timer on any scan (success or error)
+    clearCameraTimers();
+    startCameraTimer();
     
     // Check if it's an error (409 or other errors)
     if (value.status === 'error') {
@@ -222,6 +232,8 @@ watch(
     // If it's successful data, show success message
     if (value.data) {
       toggleSnackBar(value.message, 'accent');
+      // Emit success event to parent to refresh history
+      emits('success', value.message);
     }
   },
   {

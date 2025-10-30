@@ -1,8 +1,6 @@
 <template>
     <v-card>
-        <p class="decode-result">
-            Last result: <b>{{ result }}</b>
-        </p>
+       
 
         <qrcode-stream
             :paused="paused"
@@ -46,6 +44,11 @@ const resetValidationState = () => {
 const onError = console.error;
 
 const items = ref(null);
+
+// Expose items to parent component
+defineExpose({
+    items
+});
 
 // notification
 const snackBarRef = ref(null);
