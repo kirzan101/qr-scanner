@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Helpers\Helper;
 use App\Interfaces\ScanHistoryInterface;
 use App\Interfaces\ScanProcessInterface;
+use App\Models\MealSchedule;
 use App\Models\Profile;
 use App\Traits\EnsureSuccessTrait;
 use App\Traits\HttpErrorCodeTrait;
@@ -56,6 +57,16 @@ class ScanProcessService implements ScanProcessInterface
                         "Already scanned! This QR code was scanned {$timeDiff} ago at {$lastScanTime}. Please wait at least 1 hour between scans."
                     );
                 }
+
+                // $profileMealSchedules = ProfileMealSchedule::where('profile_id', $profile->id)->get();
+
+
+                // $mealSchedules = MealSchedule::where('property_id', $profileMealSchedules->property_id)->get();
+
+                // $mealScheduleItems = MealScheduleItems::where('meal_schedule_id', $mealSchedules->id)->get();
+
+
+
 
                 // If no recent scan found, proceed with scanning
                 $scanData = [
