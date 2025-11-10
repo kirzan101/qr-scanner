@@ -1,17 +1,15 @@
 <template>
     <Head :title="title" />
     <MainLayout :errors="errors" :flash="flash" :can="can">
-        <v-container>
-            <ProfileContent
-                :departments="departments"
-                :positions="positions"
-                :properties="properties"
-                :locations="locations"
-                :flash="flash"
-                :errors="errors"
-                :can="can"
-            />
-        </v-container>
+        <ProfileContent
+            :departments="departments"
+            :positions="positions"
+            :properties="properties"
+            :locations="locations"
+            :flash="flash"
+            :errors="errors"
+            :can="can"
+        />
     </MainLayout>
 </template>
 <script setup>

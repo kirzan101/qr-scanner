@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container fluid>
         <v-breadcrumbs
             :items="['Home', 'Profiles']"
             density="compact"

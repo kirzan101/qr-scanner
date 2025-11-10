@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Interfaces\Fetches\ScanHistoryFetchInterface;
 use App\Interfaces\ScanHistoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ScanHistoryController extends Controller
@@ -21,6 +22,15 @@ class ScanHistoryController extends Controller
      */
     public function index()
     {
+        $isAdmin = Auth::user()->isAdmin;
+
+        if (!$isAdmin) {
+            return Inertia::render('Error', [
+                'code' => 404,
+                'message' => 'This page unauthorized to access'
+            ]);
+        }
+
         return Inertia::render('System/ScanHistories', [
             'can' => []
         ]);

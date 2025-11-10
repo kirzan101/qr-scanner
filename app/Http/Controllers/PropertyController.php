@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Interfaces\PropertyInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class PropertyController extends Controller
@@ -19,6 +20,15 @@ class PropertyController extends Controller
      */
     public function index()
     {
+        $isAdmin = Auth::user()->isAdmin;
+
+        if (!$isAdmin) {
+            return Inertia::render('Error', [
+                'code' => 404,
+                'message' => 'This page unauthorized to access'
+            ]);
+        }
+
         return Inertia::render('System/Properties', [
             'can' => []
         ]);

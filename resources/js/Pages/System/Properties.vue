@@ -1,9 +1,7 @@
 <template>
     <Head :title="title" />
     <MainLayout :errors="errors" :flash="flash" :can="can">
-        <v-container>
-            <PropertyContent :flash="flash" :errors="errors" :can="can" />
-        </v-container>
+        <PropertyContent :flash="flash" :errors="errors" :can="can" />
     </MainLayout>
 </template>
 
