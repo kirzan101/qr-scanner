@@ -9,6 +9,7 @@ use App\Interfaces\Fetches\LocationFetchInterface;
 use App\Interfaces\Fetches\PropertyFetchInterface;
 use App\Interfaces\ProfileInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
@@ -29,6 +30,14 @@ class ProfileController extends Controller
      */
     public function index()
     {
+        $isAdmin = Auth::user()->isAdmin;
+
+        if (!$isAdmin) {
+            return Inertia::render('Error', [
+                'code' => 404,
+                'message' => 'This page unauthorized to access'
+            ]);
+        }
 
         $departments = Cache::remember('profile_departments', 60, function () {
             return $this->departmentFetch->index();

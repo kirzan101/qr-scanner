@@ -1,9 +1,7 @@
 <template>
     <Head :title="title" />
     <MainLayout :errors="errors" :flash="flash" :can="can">
-        <v-container>
-            <LocationContent :flash="flash" :errors="errors" :can="can" />
-        </v-container>
+        <LocationContent :flash="flash" :errors="errors" :can="can" />
     </MainLayout>
 </template>
 <script setup>
