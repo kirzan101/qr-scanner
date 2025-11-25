@@ -14,7 +14,6 @@ class MealSchedule extends Model
 
     protected $fillable = [
         'name',
-        'property_id',
         'remarks',
         'days',
         'created_by',
@@ -45,8 +44,8 @@ class MealSchedule extends Model
         return $this->belongsTo(Profile::class, 'updated_by');
     }
 
-    public function profileMealSchedules(): HasOne
+    public function propertyMealSchedule(): HasOne
     {
-        return $this->hasOne(ProfileMealSchedule::class);
+        return $this->hasOne(PropertyMealSchedule::class);
     }
 }

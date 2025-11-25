@@ -21,11 +21,11 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            DepartmentSeeder::class,
             PropertySeeder::class,
+            DepartmentSeeder::class,
             LocationSeeder::class,
             ProfileSeeder::class,
-            ProfileMealSchedulePerPropertySeeder::class,
+            ProfilePropertySeeder::class,
         ]);
     }
 }
