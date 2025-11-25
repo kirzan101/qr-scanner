@@ -52,13 +52,6 @@ class Profile extends Model
         return $this->belongsTo(Location::class, 'location_id');
     }
 
-
-    public function profileMealSchedules(): HasOne
-    {
-        return $this->hasOne(ProfileMealSchedule::class);
-    }
-
-
     /**
      * Get the full name of the profile, with the middle name shortened to its initials.
      *

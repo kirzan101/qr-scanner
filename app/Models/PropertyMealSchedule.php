@@ -5,21 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ProfileMealSchedule extends Model
+class PropertyMealSchedule extends Model
 {
     protected $fillable = [
-        'profile_id',
+        'property_id',
         'meal_schedule_id',
     ];
 
     /**
-     * Get the profile that owns the meal schedule.
+     * Get the property_id that owns the meal schedule.
      *
      * @return BelongsTo
      */
-    public function profile(): BelongsTo
+    public function property(): BelongsTo
     {
-        return $this->belongsTo(Profile::class);
+        return $this->belongsTo(Property::class, 'property_id');
     }
 
     /**
@@ -29,6 +29,6 @@ class ProfileMealSchedule extends Model
      */
     public function mealSchedule(): BelongsTo
     {
-        return $this->belongsTo(MealSchedule::class);
+        return $this->belongsTo(MealSchedule::class, 'meal_schedule_id');
     }
 }

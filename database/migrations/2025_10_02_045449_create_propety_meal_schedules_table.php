@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('profile_meal_schedules', function (Blueprint $table) {
+        Schema::create('property_meal_schedules', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('profile_id')->constrained()->onDelete('restrict');
+            $table->foreignId('property_id')->constrained()->onDelete('restrict');
             $table->foreignId('meal_schedule_id')->constrained()->onDelete('restrict');
             $table->timestamps();
         });
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('profile_meal_schedules');
+        Schema::dropIfExists('property_meal_schedules');
     }
 };

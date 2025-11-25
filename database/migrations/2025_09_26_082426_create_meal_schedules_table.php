@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('name');
             $table->text('remarks')->nullable();
             $table->json('days');
-            $table->foreignId('property_id')->nullable()->onDelete('restrict');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->softDeletes();
