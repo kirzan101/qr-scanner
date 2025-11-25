@@ -36,17 +36,20 @@
                     ref="formPropertyRef"
                 />
             </v-card-text>
-            <v-card-actions>
-                <v-spacer />
+            <template v-slot:actions>
+                <v-btn :disabled="btnDisabled" @click="toggleDialog">
+                    close
+                </v-btn>
                 <v-btn
-                    color="primary"
                     :disabled="btnDisabled"
+                    :loading="btnDisabled"
+                    variant="elevated"
+                    prepend-icon="mdi-check-circle"
                     @click="handleSubmit"
                 >
-                    Save
+                    save
                 </v-btn>
-                <v-btn text @click="toggleDialog">Cancel</v-btn>
-            </v-card-actions>
+            </template>
         </v-card>
     </v-dialog>
 
