@@ -38,12 +38,18 @@
                     />
                 </v-col>
             </v-row>
+
+            <TableMealSchedule
+                :form="form"
+                @update:schedule="updateSchedule"
+            />
         </v-container>
     </v-form>
 </template>
 
 <script setup>
 import { ref, watch } from "vue";
+import TableMealSchedule from "../../Tables/TableMealSchedule.vue";
 
 const props = defineProps({
     property: Object,
@@ -57,6 +63,7 @@ const form = ref({
     name: null,
     code: null,
     description: null,
+    schedule: null,
 });
 
 watch(
@@ -96,6 +103,10 @@ const emits = defineEmits(["formValues"]);
 
 const emitFormData = () => {
     emits("formValues", form.value);
+};
+
+const updateSchedule = (scheduleData) => {
+    form.value.schedule = scheduleData;
 };
 
 defineExpose({
