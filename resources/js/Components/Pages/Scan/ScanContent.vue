@@ -56,8 +56,8 @@
                 </v-card>
             </v-col>
 
-            <!-- Scan History with Pagination - Matches left side total height -->
-            <v-col cols="12" md="6" class="pl-md-2 d-flex flex-column">
+            <!-- Scan History with Pagination - Only visible on desktop -->
+            <v-col v-if="mdAndUp" cols="12" md="6" class="pl-md-2 d-flex flex-column">
                 <v-card class="d-flex flex-column" elevation="2" rounded="lg" style="flex: 1;">
                     <v-card-title class="text-h6 font-weight-bold pa-2 ml-2">
                         Scan History:
@@ -115,9 +115,12 @@
 <script setup>
 import { router } from "@inertiajs/vue3";
 import { ref, computed, watch, onMounted } from "vue";
+import { useDisplay } from 'vuetify';
 import axiosInstance from "@/Utilities/axios";
 import CardQrScanner from "./Components/CardQrScanner.vue";
 import CardLastScanned from "./Components/CardLastScanned.vue";
+
+const { mdAndUp } = useDisplay();
 
 const form = ref({
     unique_identifier: null,
