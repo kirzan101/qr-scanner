@@ -44,21 +44,21 @@ class PropertySeeder extends Seeder
             foreach ($mealSchedule->days as $day) {
                 MealScheduleItem::create([
                     'meal_schedule_id' => $mealSchedule->id,
-                    'time_start' => '07:00:00',
+                    'time_start' => '07:30:00',
                     'time_end' => '10:00:00',
                     'day_type' => $day,
                     'meal_type' => Helper::MEAL_SCHEDULE_BREAKFAST,
                 ]);
                 MealScheduleItem::create([
                     'meal_schedule_id' => $mealSchedule->id,
-                    'time_start' => '11:00:00',
+                    'time_start' => '12:00:00',
                     'time_end' => '14:00:00', // 2 PM
                     'day_type' => $day,
                     'meal_type' => Helper::MEAL_SCHEDULE_LUNCH,
                 ]);
                 MealScheduleItem::create([
                     'meal_schedule_id' => $mealSchedule->id,
-                    'time_start' => '17:00:00', // 5 PM
+                    'time_start' => '16:00:00', // 4 PM
                     'time_end' => '20:00:00', // 8 PM
                     'day_type' => $day,
                     'meal_type' => Helper::MEAL_SCHEDULE_DINNER,
