@@ -41,6 +41,7 @@
 
             <TableMealSchedule
                 :form="form"
+                :existingSchedule="form.schedule"
                 @update:schedule="updateSchedule"
             />
         </v-container>
@@ -70,19 +71,12 @@ watch(
     () => props.property,
     (newVal) => {
         if (newVal && Object.keys(newVal).length > 0) {
-            Object.keys(form.value).forEach((key) => {
-                const isNull = form.value[key] === null;
-                const isEmptyArray =
-                    Array.isArray(form.value[key]) &&
-                    form.value[key].length === 0;
-
-                // Only update if the current value is null or an empty array
-                if (isNull || isEmptyArray) {
-                    if (newVal.hasOwnProperty(key)) {
-                        form.value[key] = newVal[key];
-                    }
-                }
-            });
+            // Update all form fields from property data
+            form.value.id = newVal.id ?? form.value.id;
+            form.value.name = newVal.name ?? form.value.name;
+            form.value.code = newVal.code ?? form.value.code;
+            form.value.description = newVal.description ?? form.value.description;
+            form.value.schedule = newVal.schedule ?? form.value.schedule;
         }
     },
     { immediate: true, deep: true }

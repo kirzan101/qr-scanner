@@ -23,7 +23,7 @@ class PropertyFetchService implements PropertyFetchInterface
      */
     public function index(array $request = [], bool $isPaginated = false, ?string $resourceClass = null): array
     {
-        $query = Property::query();
+        $query = Property::query()->with(['propertyMealSchedule.mealSchedule.mealSchedule']);
 
         if ($resourceClass !== null && isset($resourceClass::$relations)) {
             $query->with($resourceClass::$relations ?? []);
@@ -33,7 +33,8 @@ class PropertyFetchService implements PropertyFetchInterface
         if (isset($request['search']) && !empty($request['search'])) {
             $search = $request['search'];
             $query->where(function ($q) use ($search) {
-                $q->where('meal_schedule', 'like', "%{$search}%");
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%");
             });
         }
 
@@ -64,8 +65,8 @@ class PropertyFetchService implements PropertyFetchInterface
      */
     public function show(int $propertyId): array
     {
-        $property = Property::find($propertyId);
+        $property = Property::with(['propertyMealSchedule.mealSchedule.mealSchedule'])->find($propertyId);
 
-        return $this->returnModel(200, Helper::SUCCESS, 'Scan history retrieved successfully!', $property);
+        return $this->returnModel(200, Helper::SUCCESS, 'Property retrieved successfully!', $property);
     }
 }

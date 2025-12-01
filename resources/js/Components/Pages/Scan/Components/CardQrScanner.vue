@@ -12,11 +12,13 @@
      <v-container class="camera-container pa-0"  style="height: 100%; overflow: hidden; position: relative; display: flex; flex-direction: column; max-width: 100%;">
        <!-- Camera content wrapper -->
        <v-container class="pa-0" fluid style="flex: 1; position: relative; max-width: 100%;">
-         <ReadQrCodeStream
+         <v-sheet 
            v-if="scannerActive"
-           ref="qrStreamRef"
-           style="height: 100%; width: 100%; object-fit: cover;"
-         />
+           style="height: 100%; width: 100%;"
+           class="pa-0"
+         >
+           <ReadQrCodeStream ref="qrStreamRef" />
+         </v-sheet>
 
          <!-- Camera Closed - Show Reopen Button -->
          <v-container v-else class="d-flex flex-column align-center justify-center pa-8" style="height: 100%;">
