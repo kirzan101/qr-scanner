@@ -37,9 +37,9 @@ class ScanController extends Controller
     /**
      * Handle the scan action.
      */
-    public function scan(ScanFormRequest $request)
+    public function scan(Request $request)
     {
-        $result = $this->scanProcess->processScan($request->validated());
+        $result = $this->scanProcess->processScan($request->validate());
 
         $status = $result['status'] ?? 'error';
         $message = $result['message'] ?? 'An error occurred';

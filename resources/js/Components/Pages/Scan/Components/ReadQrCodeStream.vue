@@ -1,7 +1,5 @@
 <template>
     <v-card>
-       
-
         <qrcode-stream
             :paused="paused"
             @detect="onDetect"
@@ -25,7 +23,9 @@ import { ref, computed, watch } from "vue";
 import { QrcodeStream } from "vue-qrcode-reader";
 import axiosInstance from "@/Utilities/axios";
 import SnackBarTop from "@/Components/Utilities/SnackBarTop.vue";
+import { usePage } from "@inertiajs/vue3";
 
+const page = usePage();
 const isValid = ref(undefined);
 const paused = ref(false);
 const result = ref(null);
@@ -47,7 +47,7 @@ const items = ref(null);
 
 // Expose items to parent component
 defineExpose({
-    items
+    items,
 });
 
 // notification
@@ -63,7 +63,7 @@ const toggleSnackBar = (message, color) => {
 const loadData = async () => {
     try {
         const response = await axiosInstance.post(
-            `/profiles/${result.value}`,
+            `/profiles/${result.value}?property_id=${page.props.auth.user.property_id}`,
             {}
         );
 

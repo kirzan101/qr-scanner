@@ -7,6 +7,7 @@ use App\Http\Resources\ScanProfileResource;
 use App\Interfaces\Fetches\ScanProfileFetchInterface;
 use App\Interfaces\ScanProcessInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ScanProfileApiController extends Controller
 {
@@ -52,10 +53,12 @@ class ScanProfileApiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function storeUniqueIdentifiers(string $request)
+    public function storeUniqueIdentifiers(Request $request, string $uniqueIdentifier)
     {
+
         $data = [
-            'unique_identifier' => $request
+            'unique_identifier' => $uniqueIdentifier,
+            'propertyId' => $request->input('property_id')
         ];
 
         $result = $this->scanProcess->processScan($data);
