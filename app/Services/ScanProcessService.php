@@ -14,6 +14,7 @@ use App\Traits\HttpErrorCodeTrait;
 use App\Traits\ReturnModelCollectionTrait;
 use App\Traits\ReturnModelTrait;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ScanProcessService implements ScanProcessInterface
@@ -35,6 +36,7 @@ class ScanProcessService implements ScanProcessInterface
         try {
             return DB::transaction(function () use ($data) {
 
+                // Find the profile associated with the scanned QR code.
                 $profile = Profile::where('unique_identifier', $data['unique_identifier'])->first();
 
                 if (!$profile) {
@@ -61,13 +63,13 @@ class ScanProcessService implements ScanProcessInterface
                 }
 
                 // Determine meal type based on property's meal schedule
-                $mealType = $this->determineMealType($profile->property_id);
+                $mealType = $this->determineMealType($data['propertyId']);
 
                 // If no recent scan found, proceed with scanning
                 $scanData = [
                     'profile_id' => $profile->id,
                     'scanned_at' => Carbon::now(),
-                    'property_id' => $profile->property_id,
+                    'property_id' => $data['propertyId'],
                     'meal_schedule' => $mealType
                 ];
 
@@ -89,7 +91,7 @@ class ScanProcessService implements ScanProcessInterface
         }
     }
 
-    
+
     private function determineMealType(?int $propertyId): string
     {
         if (!$propertyId) {
@@ -99,7 +101,7 @@ class ScanProcessService implements ScanProcessInterface
         try {
             $now = Carbon::now('Asia/Manila');
             $currentTime = $now->format('H:i:s');
-            $currentDay = $now->format('l'); 
+            $currentDay = $now->format('l');
 
             $propertyMealSchedule = PropertyMealSchedule::where('property_id', $propertyId)
                 ->with('mealSchedule.mealSchedule')
@@ -122,21 +124,21 @@ class ScanProcessService implements ScanProcessInterface
 
             foreach ($mealTypes as $mealType) {
                 $item = $mealScheduleItems->firstWhere('meal_type', $mealType);
-                
+
                 if ($item) {
                     $lastMeal = $item;
-                    
+
                     // Check if current time is within this meal period
                     if ($currentTime >= $item->time_start && $currentTime <= $item->time_end) {
                         return ucfirst($mealType);
                     }
-                    
+
                     // Check if current time is after this meal's end but before the next meal
                     if ($currentTime > $item->time_end) {
                         // Continue to check if it's within the next meal period
                         continue;
                     }
-                    
+
                     // If current time is before this meal starts
                     if ($currentTime < $item->time_start) {
                         // Check if it's late from the previous meal

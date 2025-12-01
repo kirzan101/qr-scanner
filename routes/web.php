@@ -35,6 +35,7 @@ Route::middleware(['auth'])->group(
         });
 
         Route::get('/', function () {
+            // dd(Auth::user()->profile->property_id);
             if (Auth::user()->isAdmin === 0 && Auth::user()->is_able_to_login === 1) {
                 return Inertia::render('Scans');
             }
