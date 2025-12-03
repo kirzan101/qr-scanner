@@ -43,29 +43,35 @@ class ScanProcessService implements ScanProcessInterface
                     return $this->returnModel(201, Helper::SUCCESS, 'Unidentified qr code');
                 }
 
-                // Check if the same profile was scanned within the last hour
-                $oneHourAgo = Carbon::now()->subHour();
-                $recentScan = DB::table('scan_histories')
-                    ->where('profile_id', $profile->id)
-                    ->where('scanned_at', '>=', $oneHourAgo)
-                    ->orderBy('scanned_at', 'desc')
-                    ->first();
-
-                if ($recentScan) {
-                    $timeDiff = Carbon::parse($recentScan->scanned_at)->diffForHumans(Carbon::now(), true);
-                    $lastScanTime = Carbon::parse($recentScan->scanned_at)->format('h:i A');
-
+                // Check if the day is available for scanning
+                $dayAvailability = $this->checkDayAvailability($data['propertyId']);
+                if (!$dayAvailability['available']) {
                     return $this->returnModel(
-                        201,
-                        Helper::SUCCESS,
-                        "Already scanned! This QR code was scanned {$timeDiff} ago at {$lastScanTime}. Please wait at least 1 hour between scans."
+                        201, 
+                        Helper::SUCCESS, 
+                        $dayAvailability['message']
                     );
+                }
+
+                // Get current meal timeframe
+                $currentMealTimeframe = $this->getCurrentMealTimeframe($data['propertyId']);
+                
+                // Check if user has already scanned within the current meal timeframe
+                if ($currentMealTimeframe) {
+                    $mealTimeframeScan = $this->checkMealTimeframeScan($profile->id, $currentMealTimeframe);
+                    if ($mealTimeframeScan['already_scanned']) {
+                        return $this->returnModel(
+                            201,
+                            Helper::SUCCESS,
+                            $mealTimeframeScan['message']
+                        );
+                    }
                 }
 
                 // Determine meal type based on property's meal schedule
                 $mealType = $this->determineMealType($data['propertyId']);
 
-                // If no recent scan found, proceed with scanning
+                // If all checks pass, proceed with scanning
                 $scanData = [
                     'profile_id' => $profile->id,
                     'scanned_at' => Carbon::now(),
@@ -163,6 +169,181 @@ class ScanProcessService implements ScanProcessInterface
             return 'Unknown';
         } catch (\Exception $e) {
             return 'Error: ' . $e->getMessage();
+        }
+    }
+
+    /**
+     * Get the current meal timeframe (start time, end time, meal type)
+     */
+    private function getCurrentMealTimeframe(?int $propertyId): ?array
+    {
+        if (!$propertyId) {
+            return null;
+        }
+
+        try {
+            $now = Carbon::now('Asia/Manila');
+            $currentTime = $now->format('H:i:s');
+            $currentDay = $now->format('l');
+
+            $propertyMealSchedule = PropertyMealSchedule::where('property_id', $propertyId)
+                ->with('mealSchedule.mealSchedule')
+                ->first();
+
+            if (!$propertyMealSchedule || !$propertyMealSchedule->mealSchedule) {
+                return null;
+            }
+
+            $mealScheduleItems = MealScheduleItem::where('meal_schedule_id', $propertyMealSchedule->meal_schedule_id)
+                ->where('day_type', $currentDay)
+                ->get();
+
+            if ($mealScheduleItems->isEmpty()) {
+                return null;
+            }
+
+            $mealTypes = ['breakfast', 'lunch', 'dinner'];
+
+            foreach ($mealTypes as $mealType) {
+                $item = $mealScheduleItems->firstWhere('meal_type', $mealType);
+                
+                if ($item) {
+                    // Check if current time is within this meal period
+                    if ($currentTime >= $item->time_start && $currentTime <= $item->time_end) {
+                        return [
+                            'start' => $item->time_start,
+                            'end' => $item->time_end,
+                            'meal_type' => ucfirst($mealType),
+                            'raw_meal_type' => $mealType
+                        ];
+                    }
+                    
+                    // Check if current time is after this meal's end but should be considered "late" for this meal
+                    if ($currentTime > $item->time_end) {
+                        // Find next meal to determine if we're still in "late" period for current meal
+                        $nextMealIndex = array_search($mealType, $mealTypes) + 1;
+                        if ($nextMealIndex < count($mealTypes)) {
+                            $nextMeal = $mealScheduleItems->firstWhere('meal_type', $mealTypes[$nextMealIndex]);
+                            if ($nextMeal && $currentTime < $nextMeal->time_start) {
+                                // We're in the "late" period for the current meal
+                                return [
+                                    'start' => $item->time_start,
+                                    'end' => $item->time_end,
+                                    'meal_type' => ucfirst($mealType) . '-Late',
+                                    'raw_meal_type' => $mealType
+                                ];
+                            }
+                        } else {
+                            // This is the last meal of the day, consider it "late" until end of day
+                            return [
+                                'start' => $item->time_start,
+                                'end' => '23:59:59',
+                                'meal_type' => ucfirst($mealType) . '-Late',
+                                'raw_meal_type' => $mealType
+                            ];
+                        }
+                    }
+                }
+            }
+
+            return null;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Check if the current day is available for scanning
+     */
+    private function checkDayAvailability(?int $propertyId): array
+    {
+        if (!$propertyId) {
+            return [
+                'available' => false,
+                'message' => 'No property specified for scanning.'
+            ];
+        }
+
+        try {
+            $now = Carbon::now('Asia/Manila');
+            $currentDay = $now->format('l');
+
+            $propertyMealSchedule = PropertyMealSchedule::where('property_id', $propertyId)
+                ->with('mealSchedule.mealSchedule')
+                ->first();
+
+            if (!$propertyMealSchedule || !$propertyMealSchedule->mealSchedule) {
+                return [
+                    'available' => false,
+                    'message' => 'No meal schedule configured for this property.'
+                ];
+            }
+
+            $mealScheduleItems = MealScheduleItem::where('meal_schedule_id', $propertyMealSchedule->meal_schedule_id)
+                ->where('day_type', $currentDay)
+                ->get();
+
+            if ($mealScheduleItems->isEmpty()) {
+                return [
+                    'available' => false,
+                    'message' => "Scanning is not available on {$currentDay}. Please check the meal schedule."
+                ];
+            }
+
+            return [
+                'available' => true,
+                'message' => 'Day is available for scanning.'
+            ];
+        } catch (\Exception $e) {
+            return [
+                'available' => false,
+                'message' => 'Error checking day availability: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Check if user has already scanned within the current meal timeframe
+     */
+    private function checkMealTimeframeScan(int $profileId, array $mealTimeframe): array
+    {
+        try {
+            $now = Carbon::now('Asia/Manila');
+            $today = $now->toDateString();
+            
+            // Get the meal type without the "-Late" suffix for database lookup
+            $mealType = $mealTimeframe['raw_meal_type'];
+            $displayMealType = $mealTimeframe['meal_type'];
+
+            // Check if user has already scanned for this meal today
+            $existingScan = DB::table('scan_histories')
+                ->where('profile_id', $profileId)
+                ->whereDate('scanned_at', $today)
+                ->where(function($query) use ($mealType) {
+                    $query->where('meal_schedule', ucfirst($mealType))
+                          ->orWhere('meal_schedule', ucfirst($mealType) . '-Late');
+                })
+                ->orderBy('scanned_at', 'desc')
+                ->first();
+
+            if ($existingScan) {
+                $scanTime = Carbon::parse($existingScan->scanned_at)->format('h:i A');
+                
+                return [
+                    'already_scanned' => true,
+                    'message' => "You have already scanned for {$displayMealType} today at {$scanTime}. You can only scan once per meal period."
+                ];
+            }
+
+            return [
+                'already_scanned' => false,
+                'message' => 'No previous scan found for this meal period.'
+            ];
+        } catch (\Exception $e) {
+            return [
+                'already_scanned' => false,
+                'message' => 'Error checking meal timeframe scan: ' . $e->getMessage()
+            ];
         }
     }
 }
