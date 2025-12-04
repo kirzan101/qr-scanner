@@ -46,8 +46,6 @@ Route::middleware(['auth'])->group(
             return Inertia::render('System/ScanHistories');
         });
 
-
-
         Route::resource('scans', ScanController::class)->except(['create', 'edit', 'show']);
         Route::post('/scans', [ScanController::class, 'scan'])->name('scan');
         //profile

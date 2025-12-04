@@ -24,7 +24,7 @@ class EmployeeController extends Controller
 
 
     /**
-     * Display properties
+     * Display Employee
      *
      * @return void
      */
@@ -35,7 +35,7 @@ class EmployeeController extends Controller
         if (!$isAdmin) {
             return Inertia::render('Error', [
                 'code' => 404,
-                'message' => 'This page unauthorized to access'
+                'message' => 'This page unauthorized to access this page'
             ]);
         }
 
@@ -96,7 +96,7 @@ class EmployeeController extends Controller
 
 
     /**
-     * Delete property
+     * Delete Employee
      *
      * @param [type] $id
      * @return void

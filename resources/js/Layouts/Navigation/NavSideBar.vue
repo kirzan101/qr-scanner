@@ -209,6 +209,10 @@ const systemLinks = [
         icon: "mdi-card-account-details-outline",
     },
     {
+        module: "employees",
+        icon: "mdi-office-building-cog",
+    },
+    {
         module: "departments",
         icon: "mdi-office-building",
     },
@@ -224,10 +228,7 @@ const systemLinks = [
         module: "scan_histories",
         icon: "mdi-history",
     },
-    {
-        module: "employees",
-        icon: "mdi-office-building-cog",
-    },
+
 ];
 
 const moduleLink = (module) => module.replace(/_/g, "-");

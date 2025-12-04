@@ -27,7 +27,7 @@
             width="auto"
             max-width="1000"
             prepend-icon="mdi-plus"
-            title="Add Profile"
+            title="Edit Employee"
         >
             <v-container>
                 <FormEmployee

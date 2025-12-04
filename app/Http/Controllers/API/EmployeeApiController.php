@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\EmployeeResource;
 use App\Interfaces\Fetches\EmployeeFetchInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
 
 class EmployeeApiController extends Controller
 {

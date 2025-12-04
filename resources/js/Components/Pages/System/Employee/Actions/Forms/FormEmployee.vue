@@ -82,8 +82,6 @@
 import { ref, watch, computed } from "vue";
 import DepartmentAutoComplete from "./Components/DepartmentAutoComplete.vue";
 import PositionSelect from "./Components/PositionSelect.vue";
-import PropertySelect from "./Components/PropertySelect.vue";
-import LocationSelect from "./Components/LocationSelect.vue";
 
 // Define props
 
@@ -136,7 +134,7 @@ watch(
 );
 
 const computedFilterPositions = computed(() => {
-    return props.positions.filter((position) => (position != "Manager"));
+    return props.positions.filter((position) => (position !== "Manager"));
 });
 
 // set error start

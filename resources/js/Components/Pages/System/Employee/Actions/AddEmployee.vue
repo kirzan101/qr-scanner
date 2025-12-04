@@ -114,7 +114,7 @@ const handleSubmit = () => {
         },
         onError: () => {
             // emits("notification", "Some fields has an error.", "error");
-            toggleSnackBar("Some fields has an error.", "error");
+            toggleSnackBar("Some fields have an error.", "error");
         },
         onBefore: () => {
             btnDisabled.value = true;

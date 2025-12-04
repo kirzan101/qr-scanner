@@ -27,7 +27,7 @@
             width="auto"
             max-width="1000"
             prepend-icon="mdi-plus"
-            title="Add Profile"
+            title="Edit Employee"
         >
             <v-container>
                 <FormProfile
@@ -138,7 +138,7 @@ const handleSubmit = () => {
                 toggleSnackBar(props.flash.success, "accent");
             },
             onError: () => {
-                toggleSnackBar("Some fields has an error.", "error");
+                toggleSnackBar("Some fields have an error.", "error");
             },
             onBefore: () => {
                 btnDisabled.value = true;

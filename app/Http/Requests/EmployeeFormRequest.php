@@ -3,9 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Helpers\Helper;
-use App\Models\Employee;
-use App\Models\User;
-use App\Rules\UniqueIgnoringSoftDeletes;
 use App\Traits\TrimsInputTrait;
 use Illuminate\Foundation\Http\FormRequest;
 

@@ -83,7 +83,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(EmployeeInterface::class, EmployeeService::class);
         $this->app->bind(EmployeeFetchInterface::class, EmployeeFetchService::class);
 
-
     }
 
     /**

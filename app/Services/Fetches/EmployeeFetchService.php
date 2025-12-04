@@ -5,7 +5,6 @@ namespace App\Services\Fetches;
 use App\Helpers\Helper;
 use App\Interfaces\Fetches\EmployeeFetchInterface;
 use App\Models\Profile;
-use App\Models\ScanHistory;
 use App\Traits\DefaultPaginateFilterTrait;
 use App\Traits\HttpErrorCodeTrait;
 use App\Traits\ReturnModelCollectionTrait;
@@ -20,7 +19,7 @@ class EmployeeFetchService implements EmployeeFetchInterface
         DefaultPaginateFilterTrait;
 
     /**
-     * Display a listing of the scan histories.
+     * Display a listing of the Employee.
      */
     public function indexEmployee(array $request = [], bool $isPaginated = false, ?string $resourceClass = null): array
     {
@@ -62,12 +61,10 @@ class EmployeeFetchService implements EmployeeFetchInterface
             // Manually set the current page
             Paginator::currentPageResolver(fn() => $current_page ?? 1);
 
-            $scanHistories = $query->orderBy($sort_by, $sort)->paginate($per_page);
+            $employees = $query->orderBy($sort_by, $sort)->paginate($per_page);
         } else {
-
-            $scanHistories = $query->get();
+            $employees = $query->get();
         }
-
-        return $this->returnModelCollection(200, Helper::SUCCESS, 'Successfully fetched!', $scanHistories);
+        return $this->returnModelCollection(200, Helper::SUCCESS, 'Successfully fetched!', $employees);
     }
 }
