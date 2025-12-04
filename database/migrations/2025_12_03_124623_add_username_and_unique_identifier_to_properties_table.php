@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('profiles', function (Blueprint $table) {
-            $table->unsignedBigInteger('department_id')->nullable();
+        Schema::table('properties', function (Blueprint $table) {
+            $table->string('username')->nullable()->after('description');
+            $table->string('unique_identifier')->nullable()->after('username');
         });
     }
 
@@ -21,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('profiles', function (Blueprint $table) {
-            $table->dropForeignId('department_id');
+        Schema::table('properties', function (Blueprint $table) {
+            $table->dropColumn(['username', 'unique_identifier']);
         });
     }
 };

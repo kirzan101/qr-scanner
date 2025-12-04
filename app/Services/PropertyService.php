@@ -7,7 +7,9 @@ use App\Interfaces\PropertyInterface;
 use App\Models\Property;
 use App\Models\MealSchedule;
 use App\Models\MealScheduleItem;
+use App\Models\Profile;
 use App\Models\PropertyMealSchedule;
+use App\Models\User;
 use App\Traits\HttpErrorCodeTrait;
 use App\Traits\ReturnModelCollectionTrait;
 use App\Traits\ReturnModelTrait;
@@ -30,6 +32,8 @@ class PropertyService implements PropertyInterface
                 $property = Property::create([
                     'name' => $data['name'],
                     'code' => $data['code'],
+                    'username' => $data['username'],
+                    'unique_identifier' => $data['unique_identifier'],
                     'description' => $data['description']
                 ]);
 
@@ -39,6 +43,11 @@ class PropertyService implements PropertyInterface
                 } else {
                     // Create default meal schedule
                     $this->createDefaultMealSchedule($property);
+                }
+
+                // If username and unique_identifier are provided, create a user and profile
+                if (!empty($data['username']) && !empty($data['unique_identifier'])) {
+                    $this->createUserAndProfile($property, $data);
                 }
 
                 return $this->returnModel(201, Helper::SUCCESS, 'Property created successfully!', $property, $property->id);
@@ -61,8 +70,13 @@ class PropertyService implements PropertyInterface
                 $property = tap($property)->update([
                     'name' => $data['name'] ?? $property->name,
                     'code' => $data['code'] ?? $property->code,
+                    'username' => $data['username'] ?? $property->username,
+                    'unique_identifier' => $data['unique_identifier'] ?? $property->unique_identifier,
                     'description' => $data['description'] ?? $property->description
                 ]);
+
+                // Update associated user and profile if they exist
+                $this->updateUserAndProfile($property, $data);
 
                 if (isset($data['schedule']) && !empty($data['schedule'])) {
                     $this->updateMealSchedule($property, $data['schedule']);
@@ -213,5 +227,80 @@ class PropertyService implements PropertyInterface
             'property_id' => $property->id,
             'meal_schedule_id' => $mealSchedule->id,
         ]);
+    }
+
+    /**
+     * Create a user and profile for the property
+     */
+    private function createUserAndProfile(Property $property, array $data): void
+    {
+        // Split property name into first and last names
+        $nameParts = explode(' ', trim($property->name), 2);
+        $firstName = $nameParts[0] ?? $property->name;
+        $lastName = $nameParts[1] ?? null;
+
+        // Create user account
+        $user = User::create([
+            'username' => $data['username'],
+            'email' => null, // Email is not needed for property
+            'password' => bcrypt($data['username']), // Default password, should be changed
+            'isAdmin' => false,
+            'is_able_to_login' => true,
+            'status' => 'active',
+        ]);
+
+        // Create profile linked to this property
+        Profile::create([
+            'user_id' => $user->id,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'unique_identifier' => $data['unique_identifier'],
+            'position' => null, // Position is not needed for property
+            'property_id' => $property->id,
+            'department_id' => null, // Department is not needed for property
+            'location_id' => 1, // Default location, should be configurable
+        ]);
+    }
+
+    /**
+     * Update user and profile for the property
+     */
+    private function updateUserAndProfile(Property $property, array $data): void
+    {
+        // Find existing profile for this property
+        $profile = Profile::where('property_id', $property->id)->first();
+
+        if ($profile) {
+            // Update existing user and profile
+            $user = $profile->user;
+
+            if ($user && isset($data['username']) && !empty($data['username'])) {
+                $user->update([
+                    'username' => $data['username']
+                ]);
+            }
+
+            // Update profile if unique_identifier is provided
+            if (isset($data['unique_identifier'])) {
+                $profile->update([
+                    'unique_identifier' => $data['unique_identifier']
+                ]);
+            }
+
+            // Update profile names if property name changed
+            if (isset($data['name']) && $data['name'] !== $property->name) {
+                $nameParts = explode(' ', trim($data['name']), 2);
+                $firstName = $nameParts[0] ?? $data['name'];
+                $lastName = $nameParts[1] ?? null;
+
+                $profile->update([
+                    'first_name' => $firstName,
+                    'last_name' => $lastName
+                ]);
+            }
+        } else if (!empty($data['username']) && !empty($data['unique_identifier'])) {
+            // Create new user and profile if they don't exist but username and unique_identifier are provided
+            $this->createUserAndProfile($property, $data);
+        }
     }
 }

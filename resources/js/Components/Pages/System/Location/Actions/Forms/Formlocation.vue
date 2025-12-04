@@ -22,7 +22,14 @@
                         v-model="form.code"
                         :error-messages="formErrors.code"
                         required
-
+                    />
+                </v-col>
+                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
+                    <PropertySelect
+                        label="Property"
+                        v-model="form.property_id"
+                        :properties="properties"
+                        :error-messages="formErrors.property_id"
                     />
                 </v-col>
                 <v-col cols="12" md="12" lg="12" xl="12" xxl="12">
@@ -44,9 +51,11 @@
 
 <script setup>
 import { ref, watch } from "vue";
+import PropertySelect from "../../../Profile/Actions/Forms/Components/PropertySelect.vue";
 
 const props = defineProps({
     location: Object,
+    properties: Array,
     errors: Object,
     flash: Object,
     can: Array,
@@ -57,8 +66,12 @@ const form = ref({
     name: null,
     code: null,
     description: null,
+    property_id: null,
 });
 
+// Remove API fetching - properties will be passed from parent
+
+// Watch for location changes and populate form
 watch(
     () => props.location,
     (newVal) => {
@@ -80,6 +93,8 @@ watch(
     },
     { immediate: true, deep: true }
 );
+
+// Properties are now passed from parent, so no additional watching needed
 
 // set error start
 const formErrors = ref({});

@@ -24,6 +24,28 @@
                         required
                         placeholder="e.g., IT, HR, FIN"
                     />
+                </v-col>       
+                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
+                    <v-text-field
+                        hide-details="auto"
+                        variant="outlined"
+                        density="compact"
+                        label="Username"
+                        v-model="form.username"
+                        :error-messages="formErrors.username"
+                        placeholder="Enter username"
+                    />
+                </v-col>
+                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
+                    <v-text-field
+                        hide-details="auto"
+                        variant="outlined"
+                        density="compact"
+                        label="Unique Identifier"
+                        v-model="form.unique_identifier"
+                        :error-messages="formErrors.unique_identifier"
+                        placeholder="Enter unique identifier"
+                    />
                 </v-col>
                 <v-col cols="12" md="12" lg="12" xl="12" xxl="12">
                     <v-textarea
@@ -64,6 +86,8 @@ const form = ref({
     name: null,
     code: null,
     description: null,
+    username: null,
+    unique_identifier: null,
     schedule: null,
 });
 
@@ -76,6 +100,8 @@ watch(
             form.value.name = newVal.name ?? form.value.name;
             form.value.code = newVal.code ?? form.value.code;
             form.value.description = newVal.description ?? form.value.description;
+            form.value.username = newVal.username ?? form.value.username;
+            form.value.unique_identifier = newVal.unique_identifier ?? form.value.unique_identifier;
             form.value.schedule = newVal.schedule ?? form.value.schedule;
         }
     },

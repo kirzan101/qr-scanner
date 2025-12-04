@@ -1,7 +1,7 @@
 <template>
     <Head :title="title" />
     <MainLayout :errors="errors" :flash="flash" :can="can">
-        <LocationContent :flash="flash" :errors="errors" :can="can" />
+        <LocationContent :properties="properties" :flash="flash" :errors="errors" :can="can" />
     </MainLayout>
 </template>
 <script setup>
@@ -12,7 +12,8 @@ import { computed } from "vue";
 import MainLayout from "../../Layouts/MainLayout.vue";
 import LocationContent from "../../Components/Pages/System/Location/LocationContent.vue";
 
-defineProps({
+const props = defineProps({
+    properties: Array,
     errors: Object,
     flash: Object,
     can: Array,

@@ -12,6 +12,7 @@
         >
             <v-container>
                 <FormLocation
+                    :properties="properties"
                     :errors="errors"
                     :flash="flash"
                     :can="can"
@@ -45,7 +46,7 @@ import { ref } from "vue";
 import { router } from "@inertiajs/vue3";
 
 // Importing custom components
-import FormLocation from "./Forms/FormLocation.vue";
+import FormLocation from "./Forms/Formlocation.vue";
 import SnackBar from "@/Components/Utilities/SnackBar.vue";
 
 const dialog = ref(false);
@@ -53,11 +54,12 @@ const toggleDialog = () => {
     dialog.value = !dialog.value;
 };
 
-defineProps({
+const props = defineProps({
     showBtn: {
         type: Boolean,
         default: true,
     },
+    properties: Array,
     errors: Object,
     flash: Object,
     can: Array,
