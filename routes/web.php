@@ -9,6 +9,9 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ScanHistoryController;
+use App\Http\Controllers\EmployeeController;
+
+
 use Illuminate\Support\Facades\Auth;
 
 // Route::get('/', function () {
@@ -53,5 +56,6 @@ Route::middleware(['auth'])->group(
         Route::resource('properties', PropertyController::class)->except(['create', 'edit', 'show']);
         Route::resource('locations', LocationController::class)->except(['create', 'edit', 'show']);
         Route::resource('scan-histories', ScanHistoryController::class)->except(['create', 'edit', 'show']);
+        Route::resource('employees', EmployeeController::class)->except(['create', 'edit', 'show']);
     }
 );

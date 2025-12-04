@@ -18,6 +18,8 @@ use App\Interfaces\Fetches\LocationFetchInterface;
 use App\Interfaces\ScanHistoryInterface;
 use App\Interfaces\ScanProcessInterface;
 use App\Interfaces\UserInterface;
+use App\Interfaces\EmployeeInterface;
+use App\Interfaces\Fetches\EmployeeFetchInterface;
 use App\Services\AccountService;
 use App\Services\AuthService;
 use App\Services\CurrentUserService;
@@ -34,6 +36,8 @@ use App\Services\PropertyService;
 use App\Services\ScanHistoryService;
 use App\Services\ScanProcessService;
 use App\Services\UserService;
+use App\Services\EmployeeService;
+use App\Services\Fetches\EmployeeFetchService;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
@@ -75,6 +79,11 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(AuthInterface::class, AuthService::class);
         $this->app->bind(CurrentUserInterface::class, CurrentUserService::class);
+
+        $this->app->bind(EmployeeInterface::class, EmployeeService::class);
+        $this->app->bind(EmployeeFetchInterface::class, EmployeeFetchService::class);
+
+
     }
 
     /**

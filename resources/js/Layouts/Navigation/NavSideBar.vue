@@ -224,6 +224,10 @@ const systemLinks = [
         module: "scan_histories",
         icon: "mdi-history",
     },
+    {
+        module: "employees",
+        icon: "mdi-office-building-cog",
+    },
 ];
 
 const moduleLink = (module) => module.replace(/_/g, "-");

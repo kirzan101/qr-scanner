@@ -54,7 +54,7 @@ class ProfileService implements ProfileInterface
             });
         } catch (\Throwable $th) {
             dd($th->getMessage());
-            $code = $this->httpCode($th);
+             $code = $this->httpCode($th);
             return $this->returnModel($code, 'error', $th->getMessage());
         }
     }
