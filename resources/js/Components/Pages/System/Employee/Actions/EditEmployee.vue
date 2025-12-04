@@ -30,7 +30,7 @@
             title="Edit Employee"
         >
             <v-container>
-                <FormProfile
+                <FormEmployee
                     :profile="profile"
                     :departments="departments"
                     :positions="positions"
@@ -65,10 +65,10 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import {ref} from "vue";
 import { router } from "@inertiajs/vue3";
 
-import FormProfile from "./Forms/FormProfile.vue";
+import FormEmployee from "./Forms/FormEmployee.vue";
 import SnackBar from "@/Components/Utilities/SnackBar.vue";
 
 const dialog = ref(false);
@@ -138,7 +138,7 @@ const handleSubmit = () => {
                 toggleSnackBar(props.flash.success, "accent");
             },
             onError: () => {
-                toggleSnackBar("Some fields have an error.", "error");
+                toggleSnackBar("Some fields has an error.", "error");
             },
             onBefore: () => {
                 btnDisabled.value = true;

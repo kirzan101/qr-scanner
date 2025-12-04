@@ -1,37 +1,17 @@
 <template>
-    <v-btn
-        v-if="showBtn"
-        class="ma-1"
-        variant="tonal"
-        color="primary"
-        size="small"
-        prepend-icon="mdi-pencil-circle"
-        v-tooltip:bottom="'Edit'"
-        @click="toggleDialog"
-    >
-        {{ profile.unique_identifier }}
+    <v-btn class="ma-1" prepend-icon="mdi-plus" @click="toggleDialog">
+        add
     </v-btn>
-
-    <v-chip v-else="" variant="tonal" rounded>
-        <v-tooltip
-            class="ma-1"
-            activator="parent"
-            location="bottom"
-            text="Unauthorized to edit"
-        ></v-tooltip>
-        {{ profile.unique_identifier.toUpperCase() }}
-    </v-chip>
 
     <v-dialog v-model="dialog" width="750" persistent>
         <v-card
             width="auto"
             max-width="1000"
             prepend-icon="mdi-plus"
-            title="Edit Employee"
+            title="Add Employee"
         >
             <v-container>
-                <FormProfile
-                    :profile="profile"
+                <FormEmployee
                     :departments="departments"
                     :positions="positions"
                     :properties="properties"
@@ -65,35 +45,33 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { router } from "@inertiajs/vue3";
 
-import FormProfile from "./Forms/FormProfile.vue";
+// Importing custom components
+
 import SnackBar from "@/Components/Utilities/SnackBar.vue";
+import FormEmployee from "./Forms/FormEmployee.vue";
 
 const dialog = ref(false);
 const toggleDialog = () => {
     dialog.value = !dialog.value;
 };
 
-const props = defineProps({
-    profile: {
-        type: Object,
-        required: true,
-    },
+
+defineProps({
     showBtn: {
         type: Boolean,
         default: true,
     },
-    departments: Array,
     positions: Array,
+    departments: Array,
     properties: Array,
     locations: Array,
     errors: Object,
     flash: Object,
     can: Array,
 });
-
 const form = ref({});
 
 // User group form
@@ -124,30 +102,27 @@ const handleSubmit = () => {
     toggleFormProfileRef();
 
     // submission here
-    router.post(
-        `/profiles/${props.profile.id}`,
-        {
-            _method: "PUT",
-            forceFormData: true,
-            ...form.value,
-        },
-        {
-            onSuccess: ({ props }) => {
-                dialog.value = false;
+    router.post("/employees", form.value, {
+        forceFormData: true,
+        onSuccess: ({ props }) => {
+            toggleDialog();
 
-                toggleSnackBar(props.flash.success, "accent");
-            },
-            onError: () => {
-                toggleSnackBar("Some fields have an error.", "error");
-            },
-            onBefore: () => {
-                btnDisabled.value = true;
-            },
-            onFinish: () => {
-                btnDisabled.value = false;
-            },
-        }
-    );
+            // reset form value
+            form.value = {};
+
+            toggleSnackBar(props.flash.success, "accent");
+        },
+        onError: () => {
+            // emits("notification", "Some fields has an error.", "error");
+            toggleSnackBar("Some fields have an error.", "error");
+        },
+        onBefore: () => {
+            btnDisabled.value = true;
+        },
+        onFinish: () => {
+            btnDisabled.value = false;
+        },
+    });
 };
 
 defineExpose({

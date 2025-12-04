@@ -6,6 +6,7 @@ use App\Http\Controllers\API\PropertyApiController;
 use App\Http\Controllers\API\ScanAPIController;
 use App\Http\Controllers\API\ScanHistoryApiController;
 use App\Http\Controllers\API\ScanProfileApiController;
+use App\Http\Controllers\API\EmployeeApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +23,4 @@ Route::get('/departments', [DepartmentApiController::class, 'index']);
 Route::get('/properties', [PropertyApiController::class, 'index']);
 Route::get('/locations', [LocationApiController::class, 'index']);
 Route::get('/scan-histories', [ScanHistoryApiController::class, 'index']);
+Route::get('/employees', [EmployeeApiController::class, 'index']);
