@@ -3,15 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\LocationInterface;
-use App\Interfaces\PropertyInterface;
+use App\Interfaces\Fetches\PropertyFetchInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class LocationController extends Controller
 {
     public function __construct(
-        private LocationInterface $location
+        private LocationInterface $location,
+        private PropertyFetchInterface $propertyFetch
     ) {}
 
     /**
@@ -30,8 +32,18 @@ class LocationController extends Controller
             ]);
         }
 
+        // Fetch properties for dropdown usage - simple data structure for instant loading
+        $properties = Cache::remember('location_properties_simple', 300, function () {
+            return [
+                'data' => \App\Models\Property::select(['id', 'name', 'code', 'description'])->get(),
+                'status' => 'success',
+                'message' => 'Properties retrieved successfully'
+            ];
+        });
+
         return Inertia::render('System/Locations', [
-            'can' => []
+            'can' => [],
+            'properties' => $properties['data']
         ]);
     }
 

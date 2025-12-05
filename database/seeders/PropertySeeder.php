@@ -20,10 +20,14 @@ class PropertySeeder extends Seeder
             [
                 'name' => 'Astoria Plaza',
                 'code' => 'APZ',
+                'username' => 'astoriaplaza',
+                'unique_identifier' => 'APZ001',
             ],
             [
                 'name' => 'Astoria Current',
                 'code' => 'AC3',
+                'username' => 'astoriacurrent',
+                'unique_identifier' => 'AC3001',
             ],
         ];
 

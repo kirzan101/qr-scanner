@@ -32,6 +32,7 @@
             <v-container>
                 <FormLocation
                     :location="location"
+                    :properties="properties"
                     :errors="errors"
                     :flash="flash"
                     :can="can"
@@ -64,7 +65,7 @@
 import { computed, ref } from "vue";
 import { router } from "@inertiajs/vue3";
 
-import FormLocation from "./Forms/FormLocation.vue";
+import FormLocation from "./Forms/Formlocation.vue";
 import SnackBar from "@/Components/Utilities/SnackBar.vue";
 
 const dialog = ref(false);
@@ -81,6 +82,7 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    properties: Array,
     errors: Object,
     flash: Object,
     can: Array,

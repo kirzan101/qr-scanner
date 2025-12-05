@@ -69,6 +69,7 @@
                         v-model="form.position"
                         :positions="positions"
                         :error-messages="formErrors.position"
+                        required
                     />
                 </v-col>
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
@@ -77,6 +78,7 @@
                         v-model="form.department_id"
                         :departments="departments"
                         :error-messages="formErrors.department_id"
+                        required
                     />
                 </v-col>
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
@@ -91,7 +93,7 @@
                     <LocationSelect
                         label="Location"
                         v-model="form.location_id"
-                        :locations="locations"
+                        :locations="filteredLocations"
                         :error-messages="formErrors.location_id"
                     />
                 </v-col>
@@ -131,6 +133,14 @@ const props = defineProps({
     can: Array,
 });
 
+// Computed property to filter locations based on selected property
+const filteredLocations = computed(() => {
+    if (!form.value.property_id || !props.locations) {
+        return props.locations || [];
+    }
+    return props.locations.filter(location => location.property_id === form.value.property_id);
+});
+
 const form = ref({
     id: null,
     first_name: null,
@@ -166,6 +176,17 @@ watch(
         }
     },
     { immediate: true, deep: true }
+);
+
+// Watch for property changes and reset location selection
+watch(
+    () => form.value.property_id,
+    (newPropertyId, oldPropertyId) => {
+        // Reset location selection when property changes (but not on initial load)
+        if (oldPropertyId !== undefined && oldPropertyId !== null && newPropertyId !== oldPropertyId) {
+            form.value.location_id = null;
+        }
+    }
 );
 
 // set error start
