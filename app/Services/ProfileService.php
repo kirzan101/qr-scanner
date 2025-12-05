@@ -18,7 +18,8 @@ class ProfileService implements ProfileInterface
         ReturnModelTrait;
 
     public function __construct(
-        private UserService $user
+        private UserService $user,
+        private PropertyService $propertyService
     ) {}
 
     /**
@@ -85,6 +86,23 @@ class ProfileService implements ProfileInterface
                     'location_id' => $data['location_id'] ?? $profile->location_id,
                     'position' => $data['position'] ?? $profile->position,
                 ]);
+
+                // Sync username with property if username was updated
+                if (isset($data['username']) && !empty($data['username'])) {
+                    $this->propertyService->updatePropertyUsernameFromProfile($profile->id, $data['username']);
+                }
+
+                // Sync names with property if first_name or last_name was updated
+                if (isset($data['first_name']) || isset($data['last_name'])) {
+                    $firstName = $data['first_name'] ?? $profile->first_name;
+                    $lastName = $data['last_name'] ?? $profile->last_name;
+                    $this->propertyService->updatePropertyNameFromProfile($profile->id, $firstName, $lastName);
+                }
+
+                // Sync unique_identifier with property if unique_identifier was updated
+                if (isset($data['unique_identifier'])) {
+                    $this->propertyService->updatePropertyUniqueIdentifierFromProfile($profile->id, $data['unique_identifier']);
+                }
 
                 return $this->returnModel(200, 'success', 'Profile updated successfully!', $profile, $profile->id);
             });

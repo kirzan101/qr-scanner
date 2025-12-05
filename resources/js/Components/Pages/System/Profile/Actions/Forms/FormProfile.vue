@@ -30,7 +30,6 @@
                         label="Last Name"
                         v-model="form.last_name"
                         :error-messages="formErrors.last_name"
-                        required
                     />
                 </v-col>
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
@@ -62,7 +61,6 @@
                         type="email"
                         v-model="form.email"
                         :error-messages="formErrors.email"
-                        required
                     />
                 </v-col>
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">

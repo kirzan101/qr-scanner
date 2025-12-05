@@ -15,6 +15,7 @@ use App\Traits\ReturnModelCollectionTrait;
 use App\Traits\ReturnModelTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PropertyService implements PropertyInterface
 {
@@ -66,6 +67,9 @@ class PropertyService implements PropertyInterface
         try {
             return DB::transaction(function () use ($propertyId, $data) {
                 $property = Property::findOrFail($propertyId);
+                
+                // Store old name for comparison
+                $oldPropertyName = $property->name;
 
                 $property = tap($property)->update([
                     'name' => $data['name'] ?? $property->name,
@@ -76,7 +80,7 @@ class PropertyService implements PropertyInterface
                 ]);
 
                 // Update associated user and profile if they exist
-                $this->updateUserAndProfile($property, $data);
+                $this->updateUserAndProfile($property, $data, $oldPropertyName);
 
                 if (isset($data['schedule']) && !empty($data['schedule'])) {
                     $this->updateMealSchedule($property, $data['schedule']);
@@ -265,7 +269,7 @@ class PropertyService implements PropertyInterface
     /**
      * Update user and profile for the property
      */
-    private function updateUserAndProfile(Property $property, array $data): void
+    private function updateUserAndProfile(Property $property, array $data, $oldPropertyName = null): void
     {
         // Find existing profile for this property
         $profile = Profile::where('property_id', $property->id)->first();
@@ -288,7 +292,7 @@ class PropertyService implements PropertyInterface
             }
 
             // Update profile names if property name changed
-            if (isset($data['name']) && $data['name'] !== $property->name) {
+            if (isset($data['name']) && $data['name'] !== $oldPropertyName) {
                 $nameParts = explode(' ', trim($data['name']), 2);
                 $firstName = $nameParts[0] ?? $data['name'];
                 $lastName = $nameParts[1] ?? null;
@@ -301,6 +305,80 @@ class PropertyService implements PropertyInterface
         } else if (!empty($data['username']) && !empty($data['unique_identifier'])) {
             // Create new user and profile if they don't exist but username and unique_identifier are provided
             $this->createUserAndProfile($property, $data);
+        }
+    }
+
+    /**
+     * Update property username when profile/user username changes
+     */
+    public function updatePropertyUsernameFromProfile($profileId, $newUsername): void
+    {
+        try {
+            $profile = Profile::findOrFail($profileId);
+            
+            if ($profile->property_id) {
+                $property = Property::find($profile->property_id);
+                
+                if ($property && $property->username !== $newUsername) {
+                    $property->update([
+                        'username' => $newUsername
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            // Log error but don't throw to avoid breaking profile update
+            Log::error('Failed to update property username from profile: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update property name when profile names change
+     */
+    public function updatePropertyNameFromProfile($profileId, $firstName, $lastName = null): void
+    {
+        try {
+            $profile = Profile::findOrFail($profileId);
+            
+            if ($profile->property_id) {
+                $property = Property::find($profile->property_id);
+                
+                if ($property) {
+                    // Construct full name from first and last name
+                    $newPropertyName = trim($firstName . ($lastName ? ' ' . $lastName : ''));
+                    
+                    if ($property->name !== $newPropertyName) {
+                        $property->update([
+                            'name' => $newPropertyName
+                        ]);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Log error but don't throw to avoid breaking profile update
+            Log::error('Failed to update property name from profile: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update property unique_identifier when profile unique_identifier changes
+     */
+    public function updatePropertyUniqueIdentifierFromProfile($profileId, $newUniqueIdentifier): void
+    {
+        try {
+            $profile = Profile::findOrFail($profileId);
+            
+            if ($profile->property_id) {
+                $property = Property::find($profile->property_id);
+                
+                if ($property && $property->unique_identifier !== $newUniqueIdentifier) {
+                    $property->update([
+                        'unique_identifier' => $newUniqueIdentifier
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            // Log error but don't throw to avoid breaking profile update
+            Log::error('Failed to update property unique_identifier from profile: ' . $e->getMessage());
         }
     }
 }

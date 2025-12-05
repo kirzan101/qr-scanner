@@ -41,20 +41,20 @@ class ProfileFormRequest extends FormRequest
     {
         return [
             'username' => [
-                'required',
+                'nullable',
                 'string',
                 'max:50',
                 new UniqueIgnoringSoftDeletes(User::class, 'username', $this->user_id)
             ],
             'email' => [
-                'required',
+                'nullable',
                 'email',
                 'max:255',
                 new UniqueIgnoringSoftDeletes(User::class, 'email', $this->user_id)
             ],
             'first_name' => 'required|string|max:50',
             'middle_name' => 'nullable|string|max:50',
-            'last_name' => 'required|string|max:50',
+            'last_name' => 'nullable|string|max:50',
             'unique_identifier' => 'required|string|max:50|unique:profiles,unique_identifier',
             'property_id' => 'required|integer|exists:properties,id',
             'location_id' => 'required|integer|exists:locations,id',
