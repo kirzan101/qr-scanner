@@ -24,7 +24,7 @@
                         required
                         placeholder="e.g., IT, HR, FIN"
                     />
-                </v-col>       
+                </v-col>
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
                     <v-text-field
                         hide-details="auto"

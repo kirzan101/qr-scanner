@@ -234,7 +234,10 @@ class PropertyService implements PropertyInterface
     }
 
     /**
-     * Create a user and profile for the property
+      * Create a user and profile for the property
+     * 
+     * @param Property $property The property for which to create the user and profile.
+     * @param array $data The data used to create the user and profile.
      */
     private function createUserAndProfile(Property $property, array $data): void
     {
@@ -310,6 +313,9 @@ class PropertyService implements PropertyInterface
 
     /**
      * Update property username when profile/user username changes
+     * @param int|string $profileId
+     * @param string $newUsername
+     * @return void
      */
     public function updatePropertyUsernameFromProfile($profileId, $newUsername): void
     {

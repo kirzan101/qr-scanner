@@ -55,11 +55,11 @@ class ProfileFormRequest extends FormRequest
             'first_name' => 'required|string|max:50',
             'middle_name' => 'nullable|string|max:50',
             'last_name' => 'nullable|string|max:50',
-            'unique_identifier' => 'required|string|max:50|unique:profiles,unique_identifier',
+            'unique_identifier' => 'required|string|max:50|unique:profiles,unique_identifier,' . $this->id,
             'property_id' => 'required|integer|exists:properties,id',
             'location_id' => 'required|integer|exists:locations,id',
-            'department_id' => 'required|integer|exists:departments,id',
-            'position' => 'required|string|max:50',
+            'department_id' => 'nullable|integer|exists:departments,id',
+            'position' => 'nullable|string|max:50',
 
         ];
     }

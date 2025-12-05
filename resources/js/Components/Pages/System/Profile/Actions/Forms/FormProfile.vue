@@ -183,7 +183,7 @@ watch(
     () => form.value.property_id,
     (newPropertyId, oldPropertyId) => {
         // Reset location selection when property changes (but not on initial load)
-        if (oldPropertyId !== undefined && newPropertyId !== oldPropertyId) {
+        if (oldPropertyId !== undefined && oldPropertyId !== null && newPropertyId !== oldPropertyId) {
             form.value.location_id = null;
         }
     }
