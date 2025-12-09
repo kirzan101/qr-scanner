@@ -44,6 +44,13 @@ class ScanHistoryFetchService implements ScanHistoryFetchInterface
             });
         }
 
+        // Position filter - filter by OJT or Employee
+        if (isset($request['position']) && !empty($request['position'])) {
+            $query->whereHas('profile', function ($profileQuery) use ($request) {
+                $profileQuery->where('position', $request['position']);
+            });
+        }
+
         // Date filter
         if (isset($request['date']) && !empty($request['date'])) {
             $query->whereDate('scanned_at', $request['date']);

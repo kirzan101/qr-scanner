@@ -60,6 +60,9 @@ class ProfileFormRequest extends FormRequest
             'location_id' => 'required|integer|exists:locations,id',
             'department_id' => 'nullable|integer|exists:departments,id',
             'position' => 'nullable|string|max:50',
+            'meal_entitlement' => 'nullable|string|max:100',
+            'start_date' => 'nullable|date|required_if:position,OJT',
+            'end_date' => 'nullable|date|after_or_equal:start_date|required_if:position,OJT',
 
         ];
     }

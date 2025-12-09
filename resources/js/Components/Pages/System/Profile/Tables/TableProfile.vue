@@ -100,6 +100,12 @@ const headers = ref([
         key: "created_at",
     },
     {
+        title: "Meal Entitlement",
+        align: "start",
+        sortable: false,
+        key: "meal_entitlement",
+    },
+    {
         title: "Actions",
         align: "start",
         sortable: false,

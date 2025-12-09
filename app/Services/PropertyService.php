@@ -313,11 +313,13 @@ class PropertyService implements PropertyInterface
 
     /**
      * Update property username when profile/user username changes
+     * Only updates if the profile represents the property (matching username and unique_identifier)
      * @param int|string $profileId
      * @param string $newUsername
+     * @param string|null $oldUniqueIdentifier The profile's unique_identifier before update
      * @return void
      */
-    public function updatePropertyUsernameFromProfile($profileId, $newUsername): void
+    public function updatePropertyUsernameFromProfile($profileId, $newUsername, $oldUniqueIdentifier = null): void
     {
         try {
             $profile = Profile::findOrFail($profileId);
@@ -325,7 +327,14 @@ class PropertyService implements PropertyInterface
             if ($profile->property_id) {
                 $property = Property::find($profile->property_id);
                 
-                if ($property && $property->username !== $newUsername) {
+                // Only update if this profile represents the property
+                // Use the old unique_identifier if provided (for cases where unique_identifier is being changed)
+                // Otherwise use the current unique_identifier
+                $identifierToCheck = $oldUniqueIdentifier ?? $profile->unique_identifier;
+                
+                if ($property && 
+                    $property->username !== $newUsername && 
+                    $property->unique_identifier === $identifierToCheck) {
                     $property->update([
                         'username' => $newUsername
                     ]);
@@ -339,8 +348,13 @@ class PropertyService implements PropertyInterface
 
     /**
      * Update property name when profile names change
+     * Only updates if the profile represents the property (matching unique_identifier)
+     * @param int|string $profileId
+     * @param string $firstName
+     * @param string|null $lastName
+     * @param string|null $oldUniqueIdentifier The profile's unique_identifier before update
      */
-    public function updatePropertyNameFromProfile($profileId, $firstName, $lastName = null): void
+    public function updatePropertyNameFromProfile($profileId, $firstName, $lastName = null, $oldUniqueIdentifier = null): void
     {
         try {
             $profile = Profile::findOrFail($profileId);
@@ -348,7 +362,12 @@ class PropertyService implements PropertyInterface
             if ($profile->property_id) {
                 $property = Property::find($profile->property_id);
                 
-                if ($property) {
+                // Only update if this profile represents the property
+                // Use the old unique_identifier if provided (for cases where unique_identifier is being changed)
+                // Otherwise use the current unique_identifier
+                $identifierToCheck = $oldUniqueIdentifier ?? $profile->unique_identifier;
+                
+                if ($property && $property->unique_identifier === $identifierToCheck) {
                     // Construct full name from first and last name
                     $newPropertyName = trim($firstName . ($lastName ? ' ' . $lastName : ''));
                     
@@ -367,8 +386,9 @@ class PropertyService implements PropertyInterface
 
     /**
      * Update property unique_identifier when profile unique_identifier changes
+     * Only updates if the profile represents the property (was previously matching)
      */
-    public function updatePropertyUniqueIdentifierFromProfile($profileId, $newUniqueIdentifier): void
+    public function updatePropertyUniqueIdentifierFromProfile($profileId, $newUniqueIdentifier, $oldUniqueIdentifier = null): void
     {
         try {
             $profile = Profile::findOrFail($profileId);
@@ -376,7 +396,12 @@ class PropertyService implements PropertyInterface
             if ($profile->property_id) {
                 $property = Property::find($profile->property_id);
                 
-                if ($property && $property->unique_identifier !== $newUniqueIdentifier) {
+                // Only update if this profile represents the property
+                // Check if the OLD unique_identifier matched the property's unique_identifier
+                // This prevents regular employees from changing the property unique_identifier
+                if ($property && 
+                    $property->unique_identifier !== $newUniqueIdentifier &&
+                    ($oldUniqueIdentifier === null || $property->unique_identifier === $oldUniqueIdentifier)) {
                     $property->update([
                         'unique_identifier' => $newUniqueIdentifier
                     ]);

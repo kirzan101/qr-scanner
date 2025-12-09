@@ -17,6 +17,9 @@ return new class extends Migration
             $table->timestamp('scanned_at');
             $table->foreignId('property_id')->constrained()->onDelete('restrict');
             $table->string('meal_schedule'); // e.g., breakfast, lunch, dinner
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->integer('meal_count')->default(0);
             $table->timestamps();
         });
     }

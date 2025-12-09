@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('last_name')->nullable();
             $table->string('unique_identifier')->unique();
             $table->string('position')->nullable();
+            $table->string('meal_entitlement')->nullable();
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->timestamps();
         });
     }

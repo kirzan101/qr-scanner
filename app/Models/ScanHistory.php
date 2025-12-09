@@ -11,7 +11,10 @@ class ScanHistory extends Model
         'profile_id',
         'scanned_at',
         'property_id',
-        'meal_schedule' // e.g., breakfast, lunch, dinner
+        'meal_schedule', // e.g., breakfast, lunch, dinner
+        'start_date',
+        'end_date',
+        'meal_count',
     ];
 
     /**

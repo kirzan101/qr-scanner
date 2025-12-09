@@ -91,7 +91,11 @@ class ProfileController extends Controller
         $status = $result['status'] ?? 'error';
         $message = $result['message'] ?? 'An error occurred';
 
-        return redirect()->back()->with($status, $message);
+        if ($request->wantsJson() || $request->expectsJson()) {
+            return back()->with($status, $message);
+        }
+
+        return redirect()->route('profiles.index')->with($status, $message);
     }
 
 

@@ -114,13 +114,30 @@
 
 <script setup>
 import { router } from "@inertiajs/vue3";
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { useDisplay } from 'vuetify';
 import axiosInstance from "@/Utilities/axios";
 import CardQrScanner from "./Components/CardQrScanner.vue";
 import CardLastScanned from "./Components/CardLastScanned.vue";
 
 const { mdAndUp } = useDisplay();
+
+// Position filter state
+const selectedPosition = ref(localStorage.getItem('selectedPosition') || null);
+
+// Listen for position filter changes from navbar
+const handlePositionChange = (event) => {
+    selectedPosition.value = event.detail;
+    fetchScanHistory(); // Refetch when position changes
+};
+
+onMounted(() => {
+    window.addEventListener('position-filter-changed', handlePositionChange);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('position-filter-changed', handlePositionChange);
+});
 
 const form = ref({
     unique_identifier: null,
@@ -152,7 +169,10 @@ watch(
 );
 
 const handleFormSubmission = async () => {
-    router.post("/scans", form.value, {
+    router.post("/scans", { 
+        ...form.value,
+        selected_position: selectedPosition.value 
+    }, {
         onSuccess: ({ props }) => {
             // Automatically reload scan history after successful scan
             fetchScanHistory();
@@ -181,13 +201,18 @@ const loading = ref(false);
 const fetchScanHistory = async () => {
     try {
         loading.value = true;
-        const response = await axiosInstance.get('/scan-histories', {
-            params: {
-                per_page: 50, // Get recent 50 items
-                sort_by: 'scanned_at',
-                sort_direction: 'desc'
-            }
-        });
+        const params = {
+            per_page: 50, // Get recent 50 items
+            sort_by: 'scanned_at',
+            sort_direction: 'desc'
+        };
+        
+        // Add position filter if selected
+        if (selectedPosition.value) {
+            params.position = selectedPosition.value;
+        }
+        
+        const response = await axiosInstance.get('/scan-histories', { params });
         
         // Transform API data to match CardLastScanned format
         if (response.data && response.data.data) {
@@ -230,7 +255,12 @@ const formatDateTime = (dateTime) => {
 
 // Fetch data on component mount
 onMounted(() => {
+    window.addEventListener('position-filter-changed', handlePositionChange);
     fetchScanHistory();
+});
+
+onUnmounted(() => {
+    window.removeEventListener('position-filter-changed', handlePositionChange);
 });
 
  
