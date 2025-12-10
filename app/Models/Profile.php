@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Profile extends Model
@@ -13,11 +14,14 @@ class Profile extends Model
         'first_name',
         'middle_name',
         'last_name',
-        'unique_identifier', // e.g., student number or employee ID
-        'position', // e.g., job title or OJT
+        'unique_identifier',
+        'position',
         'department_id',
         'property_id',
-        'location_id'
+        'location_id',
+        'meal_entitlement',
+        'start_date',
+        'end_date'
     ];
 
     /**
@@ -50,6 +54,14 @@ class Profile extends Model
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class, 'location_id');
+    }
+
+    /**
+     * Get all scan histories for this profile.
+     */
+    public function scanHistories(): HasMany
+    {
+        return $this->hasMany(ScanHistory::class, 'profile_id');
     }
 
     /**

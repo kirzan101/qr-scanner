@@ -11,7 +11,8 @@ class Property extends Model
         'name',
         'code',
         'description',
-
+        'username',
+        'unique_identifier',
     ];
 
     public function propertyMealSchedule(): HasOne

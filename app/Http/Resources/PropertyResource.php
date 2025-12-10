@@ -39,6 +39,8 @@ class PropertyResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'code' => $this->code,
+            'username' => $this->username,
+            'unique_identifier' => $this->unique_identifier,
             'description' => $this->description,
             'schedule' => $schedule,
         ];

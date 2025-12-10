@@ -8,6 +8,7 @@
         <template #item.name="{ item }">
             <EditLocation
                 :location="item"
+                :properties="properties"
                 :errors="props.errors"
                 :flash="props.flash"
                 :can="props.can"
@@ -22,6 +23,7 @@ import EditLocation from "../Actions/EditLocation.vue";
 
 // Define props
 const props = defineProps({
+    properties: Array,
     errors: Object,
     flash: Object,
     can: Array,

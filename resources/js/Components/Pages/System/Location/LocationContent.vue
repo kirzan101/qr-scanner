@@ -10,6 +10,7 @@
                     <v-card-title>
                         Locations
                         <AddLocation
+                            :properties="properties"
                             :errors="errors"
                             :flash="flash"
                             :can="can"
@@ -22,6 +23,7 @@
                 </v-col>
             </v-row>
             <TableLocation
+                :properties="properties"
                 :errors="errors"
                 :flash="flash"
                 :can="can"
@@ -41,6 +43,7 @@ import AddLocation from "./Actions/AddLocation.vue";
 
 // Define props
 const props = defineProps({
+    properties: Array,
     errors: Object,
     flash: Object,
     can: Array,

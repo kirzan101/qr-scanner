@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PropertyFormRequest;
 use App\Interfaces\PropertyInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,10 +38,10 @@ class PropertyController extends Controller
     /**
      * Store Property
      *
-     * @param Request $request
+     * @param PropertyFormRequest $request
      * @return void
      */
-    public function store(Request $request)
+    public function store(PropertyFormRequest $request)
     {
         $result = $this->property->storeProperty($request->all());
 
@@ -53,11 +54,11 @@ class PropertyController extends Controller
     /**
      * Update property
      *
-     * @param Request $request
+     * @param PropertyFormRequest $request
      * @param [type] $id
      * @return void
      */
-    public function update(Request $request, $id)
+    public function update(PropertyFormRequest $request, $id)
     {
 
         $result = $this->property->updateProperty($id, $request->all());

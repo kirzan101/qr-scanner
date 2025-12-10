@@ -43,6 +43,36 @@ class ScanProcessService implements ScanProcessInterface
                     return $this->returnModel(201, Helper::SUCCESS, 'Unidentified qr code');
                 }
 
+                // Check if selected position filter matches the profile's position
+                if (isset($data['selected_position']) && !empty($data['selected_position'])) {
+                    if ($profile->position !== $data['selected_position']) {
+                        return $this->returnModel(
+                            201,
+                            Helper::SUCCESS,
+                            "Scanner is set to {$data['selected_position']} mode. This QR code belongs to a {$profile->position}."
+                        );
+                    }
+                }
+
+                // Check if OJT position with expired dates
+                if ($profile->position === 'OJT') {
+                    $dateExpiration = $this->checkOJTDateExpiration($profile);
+                    if (!$dateExpiration['valid']) {
+                        return $this->returnModel(
+                            201,
+                            Helper::SUCCESS,
+                            $dateExpiration['message']
+                        );
+                    }
+                }
+
+                // Check if meal count exceeded; allow scan but capture warning
+                $mealCountCheck = $this->checkMealCountExceeded($profile);
+                $mealCountWarning = null;
+                if (!$mealCountCheck['valid']) {
+                    $mealCountWarning = $mealCountCheck['message'];
+                }
+
                 // Check if the day is available for scanning
                 $dayAvailability = $this->checkDayAvailability($data['propertyId']);
                 if (!$dayAvailability['available']) {
@@ -71,22 +101,36 @@ class ScanProcessService implements ScanProcessInterface
                 // Determine meal type based on property's meal schedule
                 $mealType = $this->determineMealType($data['propertyId']);
 
+                // Calculate current meal count for this profile (resets daily)
+                $today = Carbon::now('Asia/Manila')->toDateString();
+                $currentMealCount = $profile->scanHistories()
+                    ->whereDate('scanned_at', $today)
+                    ->count() + 1; // +1 for current scan
+
                 // If all checks pass, proceed with scanning
                 $scanData = [
                     'profile_id' => $profile->id,
                     'scanned_at' => Carbon::now(),
                     'property_id' => $data['propertyId'],
-                    'meal_schedule' => $mealType
+                    'meal_schedule' => $mealType,
+                    'start_date' => $profile->start_date,
+                    'end_date' => $profile->end_date,
+                    'meal_count' => $currentMealCount
                 ];
 
                 $scanResult = $this->scanHistory->storeScanHistory($scanData);
 
                 $this->ensureSuccess($scanResult, 'Failed to scan.');
 
+                $message = "Successfully scanned! Welcome, {$profile->first_name} {$profile->last_name}.";
+                if ($mealCountWarning) {
+                    $message .= ' Warning: ' . $mealCountWarning;
+                }
+
                 return $this->returnModel(
                     201,
                     Helper::SUCCESS,
-                    "Successfully scanned! Welcome, {$profile->first_name} {$profile->last_name}.",
+                    $message,
                     $profile,
                     $profile->id
                 );
@@ -94,6 +138,93 @@ class ScanProcessService implements ScanProcessInterface
         } catch (\Throwable $th) {
             $code = $this->httpCode($th);
             return $this->returnModel($code, Helper::ERROR, $th->getMessage());
+        }
+    }
+
+    /**
+     * Check if OJT position dates have expired
+     */
+    private function checkOJTDateExpiration(Profile $profile): array
+    {
+        try {
+            $now = Carbon::now()->format('Y-m-d');
+            
+            if (!$profile->start_date || !$profile->end_date) {
+                return [
+                    'valid' => false,
+                    'message' => 'OJT profile missing start or end date.'
+                ];
+            }
+
+            if ($now < $profile->start_date) {
+                return [
+                    'valid' => false,
+                    'message' => 'OJT has not started yet. Start date: ' . $profile->start_date
+                ];
+            }
+
+            if ($now > $profile->end_date) {
+                return [
+                    'valid' => false,
+                    'message' => 'OJT has expired. End date was: ' . $profile->end_date
+                ];
+            }
+
+            return [
+                'valid' => true,
+                'message' => 'OJT dates are valid.'
+            ];
+        } catch (\Exception $e) {
+            return [
+                'valid' => false,
+                'message' => 'Error checking OJT expiration: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Check if meal count has exceeded meal entitlement
+     */
+    private function checkMealCountExceeded(Profile $profile): array
+    {
+        try {
+            // Default to 1 for Employee position if meal_entitlement is not set
+            $mealEntitlement = $profile->meal_entitlement 
+                ? (int)$profile->meal_entitlement 
+                : ($profile->position === 'Employee' ? 1 : 0);
+            
+            if ($mealEntitlement === 0) {
+                return [
+                    'valid' => true,
+                    'message' => 'No meal entitlement set.',
+                    'meal_count' => 0
+                ];
+            }
+
+            // Count only today's scans (meal count resets daily)
+            $today = Carbon::now('Asia/Manila')->toDateString();
+            $mealCount = $profile->scanHistories()->whereDate('scanned_at', $today)->count();
+
+            if ($mealCount >= $mealEntitlement) {
+                return [
+                    'valid' => false,
+                    'message' => "Meal count exceeded. Current: {$mealCount}, Entitlement: {$mealEntitlement}",
+                    'meal_count' => $mealCount,
+                    'meal_entitlement' => $mealEntitlement
+                ];
+            }
+
+            return [
+                'valid' => true,
+                'message' => "Meal count within limit. Current: {$mealCount}, Entitlement: {$mealEntitlement}",
+                'meal_count' => $mealCount,
+                'meal_entitlement' => $mealEntitlement
+            ];
+        } catch (\Exception $e) {
+            return [
+                'valid' => false,
+                'message' => 'Error checking meal count: ' . $e->getMessage()
+            ];
         }
     }
 

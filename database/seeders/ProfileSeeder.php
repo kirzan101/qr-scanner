@@ -27,6 +27,10 @@ class ProfileSeeder extends Seeder
                 'first_name' => 'Admin',
                 'last_name' => 'User',
                 'is_able_to_login' => true,
+                'position' => 'Manager',
+                'meal_entitlement' => null,
+                'start_date' => null,
+                'end_date' => null,
             ],
         ];
 
@@ -49,6 +53,10 @@ class ProfileSeeder extends Seeder
                 'department_id' => 40,
                 'location_id' => 1,
                 'unique_identifier' => 12345,
+                'position' => $user['position'],
+                'meal_entitlement' => $user['meal_entitlement'],
+                'start_date' => $user['start_date'],
+                'end_date' => $user['end_date'],
             ]);
         }
     }

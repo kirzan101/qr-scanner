@@ -1,5 +1,5 @@
 <template>
-    <nav-bar />
+    <scan-nav-bar :errors="errors" :flash="flash" :can="can" />
 
     <v-main>
         <slot />
@@ -10,7 +10,7 @@
 import { usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
 
-import NavBar from "./Navigation/NavBar.vue";
+import ScanNavBar from "./Navigation/ScanNavBar.vue";
 
 defineProps({
     errors: Object,

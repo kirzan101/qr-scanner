@@ -30,6 +30,9 @@ class ScanProfileResource extends JsonResource
             'email' => $this->user->email,
             'unique_identifier' => $this->unique_identifier,
             'position' => $this->position,
+            'meal_entitlement' => $this->meal_entitlement,
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
             'property_id' => $this->property_id,
             'property_name' => $this->property_id ? $this->property->name : null, // ID CONVERT INTO NAME
             'department_id' => $this->department_id,

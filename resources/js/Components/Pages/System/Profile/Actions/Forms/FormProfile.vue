@@ -69,6 +69,53 @@
                         v-model="form.position"
                         :positions="positions"
                         :error-messages="formErrors.position"
+                        required
+                    />
+                </v-col>
+                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
+                    <v-text-field
+                        hide-details="auto"
+                        variant="outlined"
+                        density="compact"
+                        label="Meal Entitlement"
+                        v-model="form.meal_entitlement"
+                        :error-messages="formErrors.meal_entitlement"
+                    />
+                </v-col>
+                <v-col
+                    v-if="isOjt"
+                    cols="12"
+                    md="6"
+                    lg="6"
+                    xl="6"
+                    xxl="6"
+                >
+                    <v-text-field
+                        hide-details="auto"
+                        variant="outlined"
+                        density="compact"
+                        label="Start Date"
+                        type="date"
+                        v-model="form.start_date"
+                        :error-messages="formErrors.start_date"
+                    />
+                </v-col>
+                <v-col
+                    v-if="isOjt"
+                    cols="12"
+                    md="6"
+                    lg="6"
+                    xl="6"
+                    xxl="6"
+                >
+                    <v-text-field
+                        hide-details="auto"
+                        variant="outlined"
+                        density="compact"
+                        label="End Date"
+                        type="date"
+                        v-model="form.end_date"
+                        :error-messages="formErrors.end_date"
                     />
                 </v-col>
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
@@ -77,6 +124,7 @@
                         v-model="form.department_id"
                         :departments="departments"
                         :error-messages="formErrors.department_id"
+                        required
                     />
                 </v-col>
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
@@ -91,7 +139,7 @@
                     <LocationSelect
                         label="Location"
                         v-model="form.location_id"
-                        :locations="locations"
+                        :locations="filteredLocations"
                         :error-messages="formErrors.location_id"
                     />
                 </v-col>
@@ -131,6 +179,14 @@ const props = defineProps({
     can: Array,
 });
 
+// Computed property to filter locations based on selected property
+const filteredLocations = computed(() => {
+    if (!form.value.property_id || !props.locations) {
+        return props.locations || [];
+    }
+    return props.locations.filter(location => location.property_id === form.value.property_id);
+});
+
 const form = ref({
     id: null,
     first_name: null,
@@ -140,6 +196,9 @@ const form = ref({
     username: null,
     email: null,
     position: null,
+    meal_entitlement: null,
+    start_date: null,
+    end_date: null,
     property_id: null,
     location_id: null,
     is_able_to_login: null,
@@ -166,6 +225,31 @@ watch(
         }
     },
     { immediate: true, deep: true }
+);
+
+// Watch for property changes and reset location selection
+watch(
+    () => form.value.property_id,
+    (newPropertyId, oldPropertyId) => {
+        // Reset location selection when property changes (but not on initial load)
+        if (oldPropertyId !== undefined && oldPropertyId !== null && newPropertyId !== oldPropertyId) {
+            form.value.location_id = null;
+        }
+    }
+);
+
+// Computed property to check if position is OJT
+const isOjt = computed(() => form.value.position === 'OJT');
+
+// Watch for position changes and clear dates when not OJT
+watch(
+    () => form.value.position,
+    (newValue, oldValue) => {
+        if (oldValue && newValue !== 'OJT') {
+            form.value.start_date = null;
+            form.value.end_date = null;
+        }
+    }
 );
 
 // set error start

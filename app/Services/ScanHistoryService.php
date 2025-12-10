@@ -29,6 +29,9 @@ class ScanHistoryService implements ScanHistoryInterface
                     'scanned_at' => $data['scanned_at'],
                     'property_id' => $data['property_id'],
                     'meal_schedule' => $data['meal_schedule'],
+                    'start_date' => $data['start_date'] ?? null,
+                    'end_date' => $data['end_date'] ?? null,
+                    'meal_count' => $data['meal_count'] ?? 0,
                 ]);
 
                 return $this->returnModel(201, Helper::SUCCESS, 'Scan history created successfully!', $scanHistory, $scanHistory->id);
@@ -53,6 +56,9 @@ class ScanHistoryService implements ScanHistoryInterface
                     'scanned_at' => $data['scanned_at'] ?? $scanHistory->scanned_at,
                     'property_id' => $data['property_id'] ?? $scanHistory->property_id,
                     'meal_schedule' => $data['meal_schedule'] ?? $scanHistory->meal_schedule,
+                    'start_date' => $data['start_date'] ?? $scanHistory->start_date,
+                    'end_date' => $data['end_date'] ?? $scanHistory->end_date,
+                    'meal_count' => $data['meal_count'] ?? $scanHistory->meal_count,
                 ]);
 
                 return $this->returnModel(200, Helper::SUCCESS, 'Scan history updated successfully!', $scanHistory, $scanHistory->id);
