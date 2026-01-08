@@ -1,18 +1,18 @@
 <template>
   <SnackBarTop ref="snackBarRef" />
-  
+
   <v-card
     elevation="9"
     rounded="lg"
     variant="outlined"
-    
+
     class="mx-full justify-center pa-3 bg-white "
    >
      <!-- Fixed height container to prevent card resizing -->
      <v-container class="camera-container pa-0"  style="height: 100%; overflow: hidden; position: relative; display: flex; flex-direction: column; max-width: 100%;">
        <!-- Camera content wrapper -->
        <v-container class="pa-0" fluid style="flex: 1; position: relative; max-width: 100%;">
-         <v-sheet 
+         <v-sheet
            v-if="scannerActive"
            style="height: 100%; width: 100%;"
            class="pa-0"
@@ -25,8 +25,8 @@
            <v-icon size="80" color="warning" class="mb-4">mdi-camera-off</v-icon>
            <v-card-title class="text-h6 mb-2 text-center">Camera Timeout</v-card-title>
            <v-card-subtitle class="mb-4 text-center">No QR code detected for 20 seconds</v-card-subtitle>
-           <v-btn 
-             color="primary" 
+           <v-btn
+             color="primary"
              size="large"
              @click="restartScanner"
              prepend-icon="mdi-camera"
@@ -62,7 +62,7 @@
 import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import ReadQrCodeStream from './ReadQrCodeStream.vue';
 import SnackBarTop from "@/Components/Utilities/SnackBarTop.vue";
- 
+
 // Define props that will be passed from parent component
 const props = defineProps({
   errors: Object,
@@ -102,10 +102,10 @@ const toggleSnackBar = (message, type = 'accent') => {
 const startCameraTimer = () => {
   // Clear any existing timers
   clearCameraTimers();
-  
+
   // Reset remaining time
   remainingTime.value = 20;
-  
+
   // Start countdown interval (updates every second)
   countdownInterval = setInterval(() => {
     remainingTime.value -= 1;
@@ -113,7 +113,7 @@ const startCameraTimer = () => {
       clearInterval(countdownInterval);
     }
   }, 1000);
-  
+
   // Set camera timeout (20 seconds)
   cameraTimer = setTimeout(() => {
     clearInterval(countdownInterval);
@@ -135,15 +135,15 @@ const clearCameraTimers = () => {
 const handleScanned = (scannedData) => {
   console.log("QR Code scanned:", scannedData);
   emits('scanned', scannedData);
-  
+
   // Clear and restart timer on successful scan
   clearCameraTimers();
   startCameraTimer();
-  
+
   // Update status
   statusMessage.value = `Scanned: ${scannedData.substring(0, 30)}${scannedData.length > 30 ? '...' : ''}`;
   statusType.value = 'success';
-  
+
   // Clear status after 3 seconds
   setTimeout(() => {
     statusMessage.value = '';
@@ -160,12 +160,12 @@ const handleTimeout = () => {
 const handleSuccess = (message) => {
   console.log("Scanner success:", message);
   emits('success', message);
-  
+
   // Show brief success status
   if (message.includes('Camera ready')) {
     statusMessage.value = 'Camera ready - Point at QR code';
     statusType.value = 'info';
-    
+
     // Clear after 2 seconds
     setTimeout(() => {
       statusMessage.value = '';
@@ -176,11 +176,11 @@ const handleSuccess = (message) => {
 const handleError = (errorMessage) => {
   console.error("Scanner error:", errorMessage);
   emits('error', errorMessage);
-  
+
   // Show error status
   statusMessage.value = errorMessage;
   statusType.value = 'error';
-  
+
   // Clear after 5 seconds
   setTimeout(() => {
     statusMessage.value = '';
@@ -191,7 +191,7 @@ const restartScanner = () => {
   console.log("Restarting scanner");
   scannerActive.value = true;
   statusMessage.value = '';
-  
+
   // Start timer after component re-renders
   nextTick(() => {
     startCameraTimer();
@@ -217,20 +217,20 @@ watch(
   () => qrStreamRef.value?.items,
   (value) => {
     if (!value) return;
-    
+
     console.log("QR Scan detected, restarting timer...", value);
-    
+
     // Restart timer on any scan (success or error)
     clearCameraTimers();
     startCameraTimer();
-    
+
     // Check if it's an error (409 or other errors)
     if (value.status === 'error') {
       toggleSnackBar(value.message, 'error');
       // Don't stop camera for errors, just show message
       return;
     }
-    
+
     // If it's successful data, show success message
     if (value.data) {
       toggleSnackBar(value.message, 'accent');
@@ -266,7 +266,7 @@ onMounted(() => {
       console.debug('Scan check error:', error);
     }
   }, 500);
-  
+
   // Store interval for cleanup
   window.scanCheckInterval = checkForScans;
 });

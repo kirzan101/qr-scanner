@@ -7,6 +7,7 @@ use App\Interfaces\ScanHistoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Helpers\Helper;
 
 class ScanHistoryController extends Controller
 {
@@ -30,9 +31,10 @@ class ScanHistoryController extends Controller
                 'message' => 'This page unauthorized to access'
             ]);
         }
-
         return Inertia::render('System/ScanHistories', [
-            'can' => []
+            'can' => [],
+            'mealTypes' => Helper::MEAL_SCHEDULES,
+            'positions' => Helper::PROFILE_POSITIONS,
         ]);
     }
 

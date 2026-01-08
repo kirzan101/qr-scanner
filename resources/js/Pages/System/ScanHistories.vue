@@ -1,6 +1,6 @@
 <template>
     <MainLayout>
-        <ScanHistoryContent :errors="errors" :flash="flash" :can="can" />
+        <ScanHistoryContent :errors="errors" :flash="flash" :can="can" :mealTypes="mealTypes" :positions="positions"/>
     </MainLayout>
 </template>
 
@@ -12,5 +12,7 @@ defineProps({
     errors: Object,
     flash: Object,
     can: Array,
+    mealTypes: Array,
+    positions: Array,
 });
 </script>

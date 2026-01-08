@@ -33,6 +33,7 @@ class EmployeeResource extends JsonResource
             'department_id' => $this->department_id,
             'created_at' => $this->returnShortDateTime($this->created_at),
             'updated_at' => $this->returnShortDateTime($this->updated_at),
+            'property_id' => $this->property_id,
         ];
     }
 }

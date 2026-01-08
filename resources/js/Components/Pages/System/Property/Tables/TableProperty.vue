@@ -37,6 +37,13 @@ const headers = ref([
         key: "name",
     },
     {
+        title: " Meal Date",
+        align: "start",
+        sortable: false,
+        key: "meal_date",
+    },
+
+    {
         title: "Code",
         align: "start",
         sortable: false,

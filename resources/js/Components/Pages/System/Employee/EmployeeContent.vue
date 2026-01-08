@@ -1,8 +1,6 @@
 <template>
     <v-container fluid>
-        <v-breadcrumbs
-            :items="['Home', 'Employees']"
-        ></v-breadcrumbs>
+        <v-breadcrumbs :items="['Home', 'Employees']"></v-breadcrumbs>
         <v-card class="pa-4" elevation="4">
             <v-row class="mt-1" justify="space-between">
                 <v-col cols="12" sm="8" md="6" lg="6" xl="6" xxl="6">
@@ -42,7 +40,6 @@
 import { useDebouncedWatch } from "@/Composables/useDebouncedWatch";
 import { ref, watch } from "vue";
 import { useDisplay } from "vuetify/lib/framework.mjs";
-
 
 import AddEmployee from "./Actions/AddEmployee.vue";
 import TableEmployee from "./Tables/TableEmployee.vue";

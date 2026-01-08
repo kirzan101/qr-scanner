@@ -179,7 +179,7 @@ const isMealCountExceeded = (item) => {
         return false;
     }
     // Default to 1 for Employee position if meal_entitlement is not set
-    const mealEntitlement = item.profile?.meal_entitlement 
+    const mealEntitlement = item.profile?.meal_entitlement
         ? parseInt(item.profile.meal_entitlement)
         : (item.profile?.position === 'Employee' ? 1 : 0);
     const mealCount = parseInt(item.meal_count);

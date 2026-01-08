@@ -54,16 +54,17 @@ class ProfileFormRequest extends FormRequest
             ],
             'first_name' => 'required|string|max:50',
             'middle_name' => 'nullable|string|max:50',
-            'last_name' => 'nullable|string|max:50',
+            'last_name' => 'required|string|max:50',
             'unique_identifier' => 'required|string|max:50|unique:profiles,unique_identifier,' . $this->id,
             'property_id' => 'required|integer|exists:properties,id',
-            'location_id' => 'required|integer|exists:locations,id',
-            'department_id' => 'nullable|integer|exists:departments,id',
-            'position' => 'nullable|string|max:50',
-            'meal_entitlement' => 'nullable|string|max:100',
+            'location_id' => 'nullable|integer|exists:locations,id',
+            'department_id' => 'required|integer|exists:departments,id',
+            'position' => 'required|string|max:50',
+            'meal_entitlement' => 'required|string|max:1',
             'start_date' => 'nullable|date|required_if:position,OJT',
             'end_date' => 'nullable|date|after_or_equal:start_date|required_if:position,OJT',
 
         ];
+        
     }
 }

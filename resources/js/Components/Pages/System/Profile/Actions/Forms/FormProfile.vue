@@ -12,6 +12,7 @@
                         :error-messages="formErrors.first_name"
                     />
                 </v-col>
+
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
                     <v-text-field
                         hide-details="auto"
@@ -22,6 +23,7 @@
                         :error-messages="formErrors.middle_name"
                     />
                 </v-col>
+
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
                     <v-text-field
                         hide-details="auto"
@@ -32,16 +34,18 @@
                         :error-messages="formErrors.last_name"
                     />
                 </v-col>
+
+                <!-- POSITION DROPDOWN (ALWAYS VISIBLE) -->
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
-                    <v-text-field
-                        hide-details="auto"
-                        variant="outlined"
-                        density="compact"
-                        label="Username"
-                        v-model="form.username"
-                        :error-messages="formErrors.username"
+                    <PositionSelect
+                        label="Position"
+                        v-model="form.position"
+                        :positions="positions"
+                        :error-messages="formErrors.position"
+                        required
                     />
                 </v-col>
+
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
                     <v-text-field
                         hide-details="auto"
@@ -52,72 +56,7 @@
                         :error-messages="formErrors.unique_identifier"
                     />
                 </v-col>
-                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
-                    <v-text-field
-                        hide-details="auto"
-                        variant="outlined"
-                        density="compact"
-                        label="Email"
-                        type="email"
-                        v-model="form.email"
-                        :error-messages="formErrors.email"
-                    />
-                </v-col>
-                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
-                    <PositionSelect
-                        label="Position"
-                        v-model="form.position"
-                        :positions="positions"
-                        :error-messages="formErrors.position"
-                        required
-                    />
-                </v-col>
-                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
-                    <v-text-field
-                        hide-details="auto"
-                        variant="outlined"
-                        density="compact"
-                        label="Meal Entitlement"
-                        v-model="form.meal_entitlement"
-                        :error-messages="formErrors.meal_entitlement"
-                    />
-                </v-col>
-                <v-col
-                    v-if="isOjt"
-                    cols="12"
-                    md="6"
-                    lg="6"
-                    xl="6"
-                    xxl="6"
-                >
-                    <v-text-field
-                        hide-details="auto"
-                        variant="outlined"
-                        density="compact"
-                        label="Start Date"
-                        type="date"
-                        v-model="form.start_date"
-                        :error-messages="formErrors.start_date"
-                    />
-                </v-col>
-                <v-col
-                    v-if="isOjt"
-                    cols="12"
-                    md="6"
-                    lg="6"
-                    xl="6"
-                    xxl="6"
-                >
-                    <v-text-field
-                        hide-details="auto"
-                        variant="outlined"
-                        density="compact"
-                        label="End Date"
-                        type="date"
-                        v-model="form.end_date"
-                        :error-messages="formErrors.end_date"
-                    />
-                </v-col>
+
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
                     <DepartmentAutoComplete
                         label="Department"
@@ -127,6 +66,7 @@
                         required
                     />
                 </v-col>
+
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
                     <PropertySelect
                         label="Property"
@@ -135,25 +75,110 @@
                         :error-messages="formErrors.property_id"
                     />
                 </v-col>
-                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
-                    <LocationSelect
-                        label="Location"
-                        v-model="form.location_id"
-                        :locations="filteredLocations"
-                        :error-messages="formErrors.location_id"
-                    />
-                </v-col>
-                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
-                    <v-checkbox
-                        hide-details="auto"
-                        variant="outlined"
-                        density="compact"
-                        color="primary"
-                        label="Is able to login?"
-                        v-model="form.is_able_to_login"
-                        :error-messages="formErrors.is_able_to_login"
-                    />
-                </v-col>
+
+                <!-- SHOW ALL OTHER FIELDS ONLY IF POSITION IS SELECTED -->
+                <template v-if="form.position">
+                    <!-- EMPLOYEE ONLY FIELD -->
+                    <v-col
+                        cols="12"
+                        md="6"
+                        lg="6"
+                        xl="6"
+                        xxl="6"
+                        v-if="
+                            form.position === 'Employee' ||
+                            form.position === 'OJT'
+                        "
+                    >
+                        <v-text-field
+                            hide-details="auto"
+                            variant="outlined"
+                            density="compact"
+                            label="Meal Entitlement"
+                            v-model="form.meal_entitlement"
+                            :error-messages="formErrors.meal_entitlement"
+                            class="my-1"
+                        />
+                    </v-col>
+
+                    <!-- OJT ONLY FIELDS -->
+                    <v-col
+                        cols="12"
+                        md="6"
+                        lg="6"
+                        xl="6"
+                        xxl="6"
+                        v-if="form.position === 'OJT'"
+                    >
+                        <v-text-field
+                            hide-details="auto"
+                            variant="outlined"
+                            density="compact"
+                            label="Start Date"
+                            type="date"
+                            v-model="form.start_date"
+                            :error-messages="formErrors.start_date"
+                        />
+                    </v-col>
+                    <v-col
+                        cols="12"
+                        md="6"
+                        lg="6"
+                        xl="6"
+                        xxl="6"
+                        v-if="form.position === 'OJT'"
+                    >
+                        <v-text-field
+                            hide-details="auto"
+                            variant="outlined"
+                            density="compact"
+                            label="End Date"
+                            type="date"
+                            v-model="form.end_date"
+                            :error-messages="formErrors.end_date"
+                        />
+                    </v-col>
+                    <!-- LOGIN CHECKBOX -->
+                    <v-col
+                        cols="12"
+                        md="6"
+                        lg="6"
+                        xl="6"
+                        xxl="6"
+                        v-if="form.position === 'Employee'"
+                    >
+                        <v-checkbox
+                            hide-details="auto"
+                            variant="outlined"
+                            density="compact"
+                            color="primary"
+                            label="Is able to login?"
+                            v-model="form.is_able_to_login"
+                            :error-messages="formErrors.is_able_to_login"
+                        />
+                    </v-col>
+                    <!-- SHOW 'USERNAME' FIELD IF LOGIN IS ENABLED -->
+                    <v-col
+                        cols="12"
+                        md="6"
+                        lg="6"
+                        xl="6"
+                        xxl="6"
+                        v-if="
+                            form.position === 'Employee' &&
+                            form.is_able_to_login
+                        "
+                    >
+                        <v-text-field
+                            hide-details="auto"
+                            variant="outlined"
+                            density="compact"
+                            label="Username"
+                            v-model="form.username"
+                            :error-messages="formErrors.username"
+                        />
+                    </v-col>
+                </template>
             </v-row>
         </v-container>
     </v-form>
@@ -165,6 +190,10 @@ import DepartmentAutoComplete from "./Components/DepartmentAutoComplete.vue";
 import PositionSelect from "./Components/PositionSelect.vue";
 import PropertySelect from "./Components/PropertySelect.vue";
 import LocationSelect from "./Components/LocationSelect.vue";
+
+
+
+
 
 // Define props
 
@@ -184,7 +213,9 @@ const filteredLocations = computed(() => {
     if (!form.value.property_id || !props.locations) {
         return props.locations || [];
     }
-    return props.locations.filter(location => location.property_id === form.value.property_id);
+    return props.locations.filter(
+        (location) => location.property_id === form.value.property_id
+    );
 });
 
 const form = ref({
@@ -232,20 +263,24 @@ watch(
     () => form.value.property_id,
     (newPropertyId, oldPropertyId) => {
         // Reset location selection when property changes (but not on initial load)
-        if (oldPropertyId !== undefined && oldPropertyId !== null && newPropertyId !== oldPropertyId) {
+        if (
+            oldPropertyId !== undefined &&
+            oldPropertyId !== null &&
+            newPropertyId !== oldPropertyId
+        ) {
             form.value.location_id = null;
         }
     }
 );
 
 // Computed property to check if position is OJT
-const isOjt = computed(() => form.value.position === 'OJT');
+const isOjt = computed(() => form.value.position === "OJT");
 
 // Watch for position changes and clear dates when not OJT
 watch(
     () => form.value.position,
     (newValue, oldValue) => {
-        if (oldValue && newValue !== 'OJT') {
+        if (oldValue && newValue !== "OJT") {
             form.value.start_date = null;
             form.value.end_date = null;
         }

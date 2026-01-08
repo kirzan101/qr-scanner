@@ -17,8 +17,8 @@
             <v-col cols="3" class="font-weight-bold text-h6 text-center border-b-lg">Dinner</v-col>
           </v-row>
 
-          <v-row 
-            v-for="day in days" 
+          <v-row
+            v-for="day in days"
             :key="day"
             class="border-b py-2"
           >
@@ -33,7 +33,7 @@
               <span class="d-sm-none font-weight-medium ml-2">{{ day }}</span>
             </v-col>
             <v-col cols="12" sm="2" class="font-weight-medium d-none d-sm-flex align-center">
-              {{ day }} 
+              {{ day }}
             </v-col>
             <v-col cols="12" sm="3" class="text-center d-flex flex-column flex-sm-row align-center justify-center">
               <span class="d-sm-none font-weight-medium mb-1 text-left align-self-start">Breakfast:</span>
@@ -85,7 +85,7 @@
       prepend-icon="mdi-clock-edit-outline"
       :title="selectedDay"
     >
-      <v-container>     
+      <v-container>
         <v-row dense>
           <v-col cols="12" class="mb-2">
             <v-label class="text-caption mb-1">Start</v-label>
@@ -225,11 +225,11 @@ const openDialog = (day, mealType) => {
   selectedDay.value = `${day} - ${mealType.charAt(0).toUpperCase() + mealType.slice(1)}`
   selectedDayKey.value = day // Store the actual day key
   selectedMealType.value = mealType
-  
+
   // Copy current times for the selected meal
   editTimes.start = schedule[day][`${mealType}_start`]
   editTimes.end = schedule[day][`${mealType}_end`]
-  
+
   dialog.value = true
 }
 
@@ -237,16 +237,16 @@ const openDialog = (day, mealType) => {
 const saveSchedule = () => {
   const day = selectedDayKey.value
   const mealType = selectedMealType.value
-  
+
 
   schedule[day] = {
     ...schedule[day],
     [`${mealType}_start`]: editTimes.start,
     [`${mealType}_end`]: editTimes.end
   }
-  
+
   dialog.value = false
-  
+
   const enabledSchedule = {}
   days.forEach(day => {
     if (dayEnabled.value[day]) {
@@ -260,5 +260,5 @@ const saveSchedule = () => {
 const cancelEdit = () => {
   dialog.value = false
 }
- 
+
 </script>

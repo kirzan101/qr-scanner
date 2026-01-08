@@ -1,244 +1,129 @@
 <template>
     <v-navigation-drawer v-model="drawer" app color="primary">
+        <!-- USER INFO -->
         <v-sheet class="pa-4 d-flex flex-column align-center" color="#000020">
-            <v-avatar class="mb-4" color="blue-grey-lighten-2" size="53">
-                <v-icon
-                    :icon="profileIcon"
-                    size="x-large"
-                    color="white"
-                ></v-icon>
+            <v-avatar class="mb-4" size="53">
+                <v-icon :icon="profileIcon" size="x-large" color="white" />
             </v-avatar>
             <div class="user-name">John Doe Doorman</div>
             <div class="user-email">johndoedoorman@example.com</div>
         </v-sheet>
 
-        <v-divider></v-divider>
+        <v-divider />
 
-        <v-list nav>
-            <Link class="no-underline-v-list-item" href="/">
+        <!-- SIDEBAR -->
+        <v-list nav v-model:opened="opened">
+            <!-- DASHBOARD -->
+            <Link href="/" class="no-underline-v-list-item">
                 <v-list-item
-                    link
+                    :active="false"
                     class="sidebar-hover"
                     :class="{ selected: page.url === '/' }"
-                    @click="router.visit('/')"
                 >
                     <template #prepend>
-                        <v-icon
-                            icon="mdi-home"
-                            color="white"
-                            size="default"
-                        ></v-icon>
+                        <v-icon icon="mdi-home" />
                     </template>
-                    <v-list-item-title class="text-body-2">
-                        Dashboard
-                    </v-list-item-title>
+                    <v-list-item-title>Dashboard</v-list-item-title>
                 </v-list-item>
             </Link>
 
-            <Link
-                v-for="link in moduleLinks"
-                :key="link.module"
-                class="no-underline-v-list-item"
-                :href="`/${moduleLink(link.module)}`"
-            >
-                <v-list-item
-                    link
-                    class="sidebar-hover"
-                    :class="{
-                        selected: page.url === `/${moduleLink(link.module)}`,
-                    }"
-                    @click="router.visit(`/${moduleLink(link.module)}`)"
-                >
-                    <template #prepend>
-                        <v-icon
-                            :icon="link.icon"
-                            color="white"
-                            size="default"
-                        ></v-icon>
-                    </template>
-                    <v-list-item-title class="text-body-2">{{
-                        moduleName(link.module)
-                    }}</v-list-item-title>
-                </v-list-item>
-            </Link>
-
-            <!-- <v-list-group>
-                <template v-slot:activator="{ props }">
-                    <v-list-item
-                        v-bind="props"
-                        prepend-icon="mdi-chart-bar"
-                        title="Reports"
-                        class="sidebar-hover"
-                    ></v-list-item>
-                </template>
-
-                <Link
-                    v-for="link in reportLinks"
-                    :key="link.module"
-                    class="no-underline-v-list-item"
-                    :href="`/${moduleLink(link.module)}`"
-                >
-                    <v-list-item
-                        v-bind="props"
-                        class="sidebar-hover"
-                        :class="{
-                            selected:
-                                page.url === `/${moduleLink(link.module)}`,
-                        }"
-                        :key="link.module"
-                        @click="router.visit(`/${moduleLink(link.module)}`)"
-                    >
-                        <v-list-item-title class="text-body-2">{{
-                            moduleName(link.module)
-                        }}</v-list-item-title>
-                    </v-list-item>
-                </Link>
-            </v-list-group> -->
-
-            <v-list-group>
-                <template v-slot:activator="{ props }">
+            <!-- SYSTEMS GROUP -->
+            <v-list-group value="systems">
+                <template #activator="{ props }">
                     <v-list-item
                         v-bind="props"
                         prepend-icon="mdi-tools"
                         title="Systems"
                         class="sidebar-hover"
-                    ></v-list-item>
+                        :class="{ selected: isSystemRoute }"
+                    />
                 </template>
 
+                <!-- SYSTEM LINKS -->
                 <Link
                     v-for="link in systemLinks"
                     :key="link.module"
-                    class="no-underline-v-list-item"
                     :href="`/${moduleLink(link.module)}`"
+                    class="no-underline-v-list-item"
                 >
                     <v-list-item
-                        v-bind="props"
+                        :active="false"
                         class="sidebar-hover"
                         :class="{
                             selected:
                                 page.url === `/${moduleLink(link.module)}`,
                         }"
-                        :key="link.module"
-                        @click="router.visit(`/${moduleLink(link.module)}`)"
                     >
-                        <v-list-item-title class="text-body-2">{{
-                            moduleName(link.module)
-                        }}</v-list-item-title>
+                        <v-list-item-title>
+                            {{ moduleName(link.module) }}
+                        </v-list-item-title>
                     </v-list-item>
                 </Link>
             </v-list-group>
         </v-list>
 
-        <template v-slot:append>
-            <v-footer class="d-flex flex-column text-center" color="primary">
-                <div>
-                    <strong style="font-size: 0.99rem">{{ appName }}</strong>
-
-                    <br />
-                    <strong>Developer ©</strong> —
-                    {{ new Date().getFullYear() }}
-                </div>
+        <!-- FOOTER -->
+        <template #append>
+            <v-footer class="text-center">
+                <strong>{{ appName }}</strong>
+                <br />
+                Developer © — {{ new Date().getFullYear() }}
             </v-footer>
         </template>
     </v-navigation-drawer>
 
-    <nav-bar
-        :hasDrawer="true"
-        :errors="errors"
-        :flash="flash"
-        :can="can"
-        @toggleDrawer="toggleDrawer"
-    />
+    <!-- TOP NAV -->
+    <nav-bar :hasDrawer="true" @toggleDrawer="toggleDrawer" />
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
-import NavBar from "./NavBar.vue";
-import { usePage, Link, router } from "@inertiajs/vue3";
+import { ref, computed, onMounted } from "vue";
+import { usePage, Link } from "@inertiajs/vue3";
 import { useDisplay } from "vuetify";
+import NavBar from "./NavBar.vue";
 
-const props = defineProps({
-    errors: Object,
-    flash: Object,
-    can: Array,
-});
-
+/* DRAWER */
 const drawer = ref(false);
+const opened = ref(["systems"]); // 👈 keep Systems open
 
 const { mobile } = useDisplay();
 onMounted(() => {
-    if (!mobile.value) {
-        drawer.value = true;
-    }
+    if (!mobile.value) drawer.value = true;
 });
+const toggleDrawer = () => (drawer.value = !drawer.value);
 
-const toggleDrawer = () => {
-    drawer.value = !drawer.value;
-};
-
+/* PAGE */
 const page = usePage();
-const appName = computed(() => {
-    return page.props?.appName ?? "App Name";
-});
+const appName = computed(() => page.props?.appName ?? "App Name");
 
-const fullName = computed(() => {
-    return page.props?.auth?.user?.name ?? "Full Name";
-});
+/* USER ICON */
+const profileIcon = computed(() =>
+    page.props?.auth?.user?.isAdmin ? "mdi-account-star" : "mdi-account"
+);
 
-const emailAddress = computed(() => {
-    return page.props?.auth?.user?.email ?? "Email Address";
-});
-
-const profileIcon = computed(() => {
-    return page.props?.auth?.user?.isAdmin ? "mdi-account-star" : "mdi-account";
-});
-
-const accountType = computed(() => {
-    return page.props?.auth?.user?.type;
-});
-
-const accessibleModules = computed(() => page.props?.accessibleModules ?? []);
-
-const moduleLinks = [];
-
-const reportLinks = [];
-
+/* SYSTEM LINKS */
 const systemLinks = [
-    {
-        module: "profiles",
-        icon: "mdi-card-account-details-outline",
-    },
-    {
-        module: "employees",
-        icon: "mdi-office-building-cog",
-    },
-    {
-        module: "departments",
-        icon: "mdi-office-building",
-    },
-    {
-        module: "properties",
-        icon: "mdi-office-building",
-    },
-    {
-        module: "locations",
-        icon: "mdi-office-building",
-    },
-    {
-        module: "scan_histories",
-        icon: "mdi-history",
-    },
-
+    { module: "profiles" },
+    { module: "employees" },
+    { module: "departments" },
+    { module: "properties" },
+    { module: "locations" },
+    { module: "scan_histories" },
 ];
 
-const moduleLink = (module) => module.replace(/_/g, "-");
-const moduleName = (module) => {
-    return module
+/* HELPERS */
+const moduleLink = (m) => m.replace(/_/g, "-");
+const moduleName = (m) =>
+    m
         .replace(/_/g, "-")
         .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((w) => w[0].toUpperCase() + w.slice(1))
         .join(" ");
-};
+
+/* IS SYSTEM ROUTE */
+const isSystemRoute = computed(() =>
+    systemLinks.some((l) => page.url === `/${moduleLink(l.module)}`)
+);
 </script>
 
 <style scoped>

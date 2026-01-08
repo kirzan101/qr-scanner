@@ -45,8 +45,9 @@ class EmployeeFormRequest extends FormRequest
             'email' => 'nullable|email|max:255',
             'position' => 'required|string|max:50',
             'department_id' => 'required|integer|exists:departments,id',
-
-
+            'start_date' => 'nullable|string',
+            'end_date' => 'nullable|string|after_or_equal:start_date',
+            'meal_entitlement' => 'nullable|integer|min:0',
         ];
     }
 }
