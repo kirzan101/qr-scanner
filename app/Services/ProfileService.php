@@ -38,7 +38,6 @@ class ProfileService implements ProfileInterface
                     ]);
                 }
 
-
                 $profile = Profile::create([
                     'first_name' => $data['first_name'] ?? null,
                     'middle_name' => $data['middle_name'] ?? null,
@@ -70,7 +69,7 @@ class ProfileService implements ProfileInterface
         try {
             return DB::transaction(function () use ($profileId, $data) {
                 $profile = Profile::findOrFail($profileId);
-                
+
                 // Store old values before update for property sync validation
                 $oldUniqueIdentifier = $profile->unique_identifier;
 
@@ -99,7 +98,7 @@ class ProfileService implements ProfileInterface
                 // Sync username with property if username was updated
                 if (isset($data['username']) && !empty($data['username'])) {
                     $this->propertyService->updatePropertyUsernameFromProfile(
-                        $profile->id, 
+                        $profile->id,
                         $data['username'],
                         $oldUniqueIdentifier
                     );
@@ -110,8 +109,8 @@ class ProfileService implements ProfileInterface
                     $firstName = $data['first_name'] ?? $profile->first_name;
                     $lastName = $data['last_name'] ?? $profile->last_name;
                     $this->propertyService->updatePropertyNameFromProfile(
-                        $profile->id, 
-                        $firstName, 
+                        $profile->id,
+                        $firstName,
                         $lastName,
                         $oldUniqueIdentifier
                     );
@@ -120,7 +119,7 @@ class ProfileService implements ProfileInterface
                 // Sync unique_identifier with property if unique_identifier was updated
                 if (isset($data['unique_identifier'])) {
                     $this->propertyService->updatePropertyUniqueIdentifierFromProfile(
-                        $profile->id, 
+                        $profile->id,
                         $data['unique_identifier'],
                         $oldUniqueIdentifier
                     );

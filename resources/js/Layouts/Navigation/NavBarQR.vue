@@ -1,4 +1,5 @@
 <template>
+
     <v-app-bar color="primary">
         <v-app-bar-nav-icon v-if="hasDrawer" @click="toggleDrawer" />
 
@@ -11,14 +12,6 @@
             />
         </v-app-bar-title>
         <template v-slot:append v-if="true">
-            <v-select
-                class="d-flex justify-center"
-                v-model="selectedPosition"
-                :items="positionOptions"
-                density="compact"
-                variant="outlined"
-                style="max-width: 300px;"
-            ></v-select>
             <switch-theme />
             <menu-settings
                 :errors="errors"
@@ -31,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
 
 import SwitchTheme from "./Components/SwitchTheme.vue";
@@ -40,21 +33,6 @@ import MenuSettings from "./Components/MenuSettings.vue";
 const page = usePage();
 const appName = computed(() => {
     return page.props.appName ?? "App Name";
-});
-
-// Position filter state
-const selectedPosition = ref(localStorage.getItem('selectedPosition') || null);
-const positionOptions = ['OJT', 'Employee'];
-
-// Watch for changes and persist to localStorage
-watch(selectedPosition, (newValue) => {
-    if (newValue) {
-        localStorage.setItem('selectedPosition', newValue);
-    } else {
-        localStorage.removeItem('selectedPosition');
-    }
-    // Dispatch custom event for other components to listen
-    window.dispatchEvent(new CustomEvent('position-filter-changed', { detail: newValue }));
 });
 
 const props = defineProps({

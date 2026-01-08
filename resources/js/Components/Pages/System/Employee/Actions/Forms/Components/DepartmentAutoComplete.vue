@@ -4,7 +4,6 @@
         item-title="name"
         label="Department"
         density="compact"
-        class="my-1"
         color="primary"
         clearable
         hide-details="auto"

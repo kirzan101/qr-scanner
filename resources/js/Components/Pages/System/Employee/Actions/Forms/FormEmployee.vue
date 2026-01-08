@@ -60,6 +60,18 @@
                         v-model="form.position"
                         :positions="computedFilterPositions"
                         :error-messages="formErrors.position"
+                        hide-details="auto"
+
+                    />
+                </v-col>
+                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
+                    <v-text-field
+                        hide-details="auto"
+                        variant="outlined"
+                        density="compact"
+                        label="Meal Entitlement"
+                        v-model="form.meal_entitlement"
+                        :error-messages="formErrors.meal_entitlement"
                     />
                 </v-col>
                 <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
@@ -70,9 +82,35 @@
                         :error-messages="formErrors.department_id"
                     />
                 </v-col>
+                <v-col cols="12" md="6" lg="6" xl="6" xxl="6">
+                    <PropertySelect
+                        label="Property"
+                        v-model="form.property_id"
+                        :properties="properties"
+                        :error-messages="formErrors.property_id"
+                    />
+                </v-col>
+                <!-- Show if Position is OJT -->
+                <v-col cols="12" md="6" v-if="isOJT">
+                    <v-text-field
+                        label="Start Date"
+                        v-model="form.start_date"
+                        type="date"
+                        hide-details="auto"
+                        density="compact"
+                        class="my-1"
+                    />
+                </v-col>
 
-
-
+                <v-col cols="6" md="6" v-if="isOJT">
+                    <v-text-field
+                        label="End Date"
+                        v-model="form.end_date"
+                        type="date"
+                        hide-details="auto"
+                        density="compact"
+                    />
+                </v-col>
             </v-row>
         </v-container>
     </v-form>
@@ -82,7 +120,7 @@
 import { ref, watch, computed } from "vue";
 import DepartmentAutoComplete from "./Components/DepartmentAutoComplete.vue";
 import PositionSelect from "./Components/PositionSelect.vue";
-
+import PropertySelect from "./Components/PropertySelect.vue";
 // Define props
 
 const props = defineProps({
@@ -94,6 +132,13 @@ const props = defineProps({
     errors: Object,
     flash: Object,
     can: Array,
+});
+// Computed property to filter locations based on selected property
+const filteredLocations = computed(() => {
+    if (!form.value.property_id || !props.locations) {
+        return props.locations || [];
+    }
+    return props.locations.filter(location => location.property_id === form.value.property_id);
 });
 
 const form = ref({
@@ -109,6 +154,9 @@ const form = ref({
     location_id: null,
     is_able_to_login: null,
     department_id: null,
+    start_date: null,
+    end_date: null,
+    meal_entitlement: null,
 });
 
 watch(
@@ -133,9 +181,39 @@ watch(
     { immediate: true, deep: true }
 );
 
+// Watch for property changes and reset location selection
+watch(
+    () => form.value.property_id,
+    (newPropertyId, oldPropertyId) => {
+        // Reset location selection when property changes (but not on initial load)
+        if (oldPropertyId !== undefined && oldPropertyId !== null && newPropertyId !== oldPropertyId) {
+            form.value.location_id = null;
+        }
+    }
+);
+
 const computedFilterPositions = computed(() => {
-    return props.positions.filter((position) => (position !== "Manager"));
+    return props.positions.filter((position) => position !== "Manager");
 });
+
+// Show/hide OJT fields Date Created and Date end
+const isOJT = computed(() => form.value.position === "OJT");
+watch(
+    () => form.position,
+    (newVal) => {
+        if (newVal === "OJT") {
+            const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+            const end = new Date();
+            end.setMonth(end.getMonth() + 6); // example: 6-month expiry
+
+            form.date_created = today;
+            form.date_end = end.toISOString().slice(0, 10);
+        } else {
+            form.date_created = null;
+            form.date_end = null; // or keep values but hide them
+        }
+    }
+);
 
 // set error start
 const formErrors = ref({});

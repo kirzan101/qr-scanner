@@ -4,7 +4,6 @@
         item-title="name"
         label="Location"
         density="compact"
-        class="my-1"
         color="primary"
         hide-details="auto"
         :items="locations"

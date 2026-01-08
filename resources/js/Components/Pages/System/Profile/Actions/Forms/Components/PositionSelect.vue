@@ -4,7 +4,6 @@
         item-title="name"
         label="Position"
         density="compact"
-        class="my-1"
         color="primary"
         hide-details="auto"
         :items="positions"

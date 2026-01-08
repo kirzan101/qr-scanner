@@ -6,21 +6,31 @@
         ></v-breadcrumbs>
         <v-card class="pa-4" elevation="4">
             <v-row class="mt-1" justify="space-between">
-                <v-col cols="12" sm="8" md="6" lg="6" xl="6" xxl="6">
                     <v-card-title> Scan History Records </v-card-title>
+                <v-col cols="12" sm="4" md="4" lg="4" xl="4" xxl="4">
+                    <c-search-field v-model="filters.search" clearable />
                 </v-col>
-                <v-col cols="12" sm="2" md="2" lg="2" xl="2" xxl="2">
-                    <v-select
-                        :items="['OJT', 'Employee']"
+            </v-row>
+            <v-row class="mt-1" justify="start">
+            <v-col cols="6" md="6" lg="6" xl="6" xxl="6">
+                   <v-select
+                        :items="positions"
                         label="Filter by Position"
-                        v-model="selectedPosition"
+                        v-model="filters.position"
                         density="compact"
                         variant="outlined"
                         clearable
                     ></v-select>
                 </v-col>
-                <v-col cols="12" sm="4" md="4" lg="4" xl="4" xxl="4">
-                    <c-search-field v-model="filters.search" clearable />
+            <v-col cols="6" md="6" lg="6" xl="6" xxl="6">
+                    <v-select
+                        :items="mealTypes"
+                        label="Meal Type"
+                        v-model="filters.meal_type"
+                        density="compact"
+                        variant="outlined"
+                        clearable
+                    ></v-select>
                 </v-col>
             </v-row>
             <TableScanHistory
@@ -37,70 +47,43 @@ const props = defineProps({
     errors: Object,
     flash: Object,
     can: Array,
+    mealTypes: Array,
+    positions: Array,
 });
 
-import { ref, watch, onMounted, onUnmounted } from "vue";
+import { useDebouncedWatch } from "@/Composables/useDebouncedWatch";
+import { ref, watch } from "vue";
 import TableScanHistory from "./Tables/TableScanHistory.vue";
 
 const tableRef = ref(null);
 const filters = ref({
     search: "",
+    meal_type: null,
+    position: null,
 });
 
-// Position filter state from localStorage
-const selectedPosition = ref(localStorage.getItem('selectedPosition') || null);
-
-// Listen for position filter changes from navbar
-const handlePositionChange = (event) => {
-    selectedPosition.value = event.detail;
+const toggleLoadData = (value = {}) => {
     if (tableRef.value) {
-        tableRef.value.toggleLoadData({
-            search: filters.value.search,
-            position: event.detail,
-        });
+        tableRef.value.toggleLoadData(value);
     }
 };
 
-onMounted(() => {
-    window.addEventListener('position-filter-changed', handlePositionChange);
-});
-
-onUnmounted(() => {
-    window.removeEventListener('position-filter-changed', handlePositionChange);
-});
-
-// Watch for search changes and trigger table reload
-watch(
-    () => filters.value.search,
-    (newValue) => {
-        if (tableRef.value) {
-            tableRef.value.toggleLoadData({
-                search: newValue,
-                position: selectedPosition.value,
-            });
-        }
-    }
+useDebouncedWatch(
+    filters,
+    (value) => {
+        toggleLoadData(value);
+    },
+    undefined,
+    { deep: true }
 );
 
-// Watch for position changes and trigger table reload
+// reload data when flash message changes
 watch(
-    selectedPosition,
-    (newValue) => {
-        // Update localStorage
-        if (newValue) {
-            localStorage.setItem('selectedPosition', newValue);
-        } else {
-            localStorage.removeItem('selectedPosition');
-        }
-        // Dispatch event for other components
-        window.dispatchEvent(new CustomEvent('position-filter-changed', { detail: newValue }));
-        // Reload table data
-        if (tableRef.value) {
-            tableRef.value.toggleLoadData({
-                search: filters.value.search,
-                position: newValue,
-            });
-        }
-    }
+    () => props.flash,
+    () => {
+        toggleLoadData(filters.value);
+    },
+    { immediate: true }
 );
+
 </script>
