@@ -1,7 +1,7 @@
 <template>
     <Head :title="title" />
     <BlankLayout :errors="errors" :flash="flash" :can="can">
-        <v-container>
+        <v-container fluid>
             <ScanContent :flash="flash" :errors="errors" />
         </v-container>
     </BlankLayout>
