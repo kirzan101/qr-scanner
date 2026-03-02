@@ -6,27 +6,28 @@
         ></v-breadcrumbs>
         <v-card class="pa-4" elevation="4">
             <v-row class="mt-1" justify="space-between">
-                    <v-card-title> Scan History Records </v-card-title>
+                <v-card-title> Scan History Records </v-card-title>
+                <v-col cols="12" sm="4" md="4" lg="4" xl="4" xxl="4">
+                    <c-search-field v-model="filters.search" clearable />
+                </v-col>
                 <v-col cols="12" sm="4" md="4" lg="4" xl="4" xxl="4">
                     <c-search-field v-model="filters.search" clearable />
                 </v-col>
             </v-row>
-            <v-row class="mt-1" justify="start">
-            <v-col cols="6" md="6" lg="6" xl="6" xxl="6">
-                   <v-select
-                        :items="positions"
+            <v-row>
+                <v-col
+                    class="ml-4"
+                    cols="12"
+                    sm="4"
+                    md="4"
+                    lg="4"
+                    xl="4"
+                    xxl="4"
+                >
+                    <v-select
+                        :items="['OJT', 'Employee']"
                         label="Filter by Position"
                         v-model="filters.position"
-                        density="compact"
-                        variant="outlined"
-                        clearable
-                    ></v-select>
-                </v-col>
-            <v-col cols="6" md="6" lg="6" xl="6" xxl="6">
-                    <v-select
-                        :items="mealTypes"
-                        label="Meal Type"
-                        v-model="filters.meal_type"
                         density="compact"
                         variant="outlined"
                         clearable
@@ -62,28 +63,56 @@ const filters = ref({
     position: null,
 });
 
-const toggleLoadData = (value = {}) => {
+// Position filter state from localStorage
+const selectedPosition = ref(localStorage.getItem("selectedPosition") || null);
+
+// Listen for position filter changes from navbar
+const handlePositionChange = (event) => {
+    selectedPosition.value = event.detail;
     if (tableRef.value) {
         tableRef.value.toggleLoadData(value);
     }
 };
 
-useDebouncedWatch(
-    filters,
-    (value) => {
-        toggleLoadData(value);
-    },
-    undefined,
-    { deep: true }
-);
+onMounted(() => {
+    window.addEventListener("position-filter-changed", handlePositionChange);
+});
 
-// reload data when flash message changes
+onUnmounted(() => {
+    window.removeEventListener("position-filter-changed", handlePositionChange);
+});
+
+// Watch for search changes and trigger table reload
 watch(
-    () => props.flash,
-    () => {
-        toggleLoadData(filters.value);
+    () => filters.value.search,
+    (newValue) => {
+        if (tableRef.value) {
+            tableRef.value.toggleLoadData({
+                search: newValue,
+                position: selectedPosition.value,
+            });
+        }
     },
-    { immediate: true }
 );
 
+// Watch for position changes and trigger table reload
+watch(selectedPosition, (newValue) => {
+    // Update localStorage
+    if (newValue) {
+        localStorage.setItem("selectedPosition", newValue);
+    } else {
+        localStorage.removeItem("selectedPosition");
+    }
+    // Dispatch event for other components
+    window.dispatchEvent(
+        new CustomEvent("position-filter-changed", { detail: newValue }),
+    );
+    // Reload table data
+    if (tableRef.value) {
+        tableRef.value.toggleLoadData({
+            search: filters.value.search,
+            position: newValue,
+        });
+    }
+});
 </script>
